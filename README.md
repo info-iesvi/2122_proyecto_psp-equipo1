@@ -1,21 +1,17 @@
 # PROYECTO READMINE
 
-IMAGEN
-
-#### Equipo 1 - 2ªDAM
-#### Curso 2021/2022
-
-#### Ángel de la Fuente Jiménez
-#### Miguel Ángel Vidal de Blanca
+#### Equipo 1 - 2ªDAM - Curso 2021/2022
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/logoReadMine.png)
+#### Desarrollado por Ángel de la Fuente Jiménez & Miguel Ángel Vidal de Blanca
 
 ## ÍNDICE:
 
-INTRODUCCIÓN
-DESCRIPCIÓN
-REQUESITOS DEL SISTEMA:
-REQUESITOS NO FUNCIONALES
-REQUESITOS FUNCIONALES
-REQUESITOS DE INFORMACIÓN
+ - INTRODUCCIÓN
+ - DESCRIPCIÓN
+ - REQUESITOS DEL SISTEMA:
+ - REQUESITOS NO FUNCIONALES
+ - REQUESITOS FUNCIONALES
+ - REQUESITOS DE INFORMACIÓN
 
 ## INTRODUCCIÓN:
 El Equipo 1 busca ofrecer una plataforma cómoda y segura para promover y facilitar el buen hábito lector de modo que se adapte a nuevos usuarios con ganas de conocer nuevos mundos, historias, relatos, asi como personas con quien compartirlos. Buscamos ofrecer un buen catálogo de entradas comentadas por nuestros usuarios y un acceso a chats en vivo.
