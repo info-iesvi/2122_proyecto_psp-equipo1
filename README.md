@@ -25,7 +25,7 @@ El sistema tiene una serie de requisitos funcionales, no funcionales y de inform
 
 ### REQUESITOS NO FUNCIONALES:
 
-| Requesito | Descripción |
+| Requisito | Descripción |
 | ------ | ------ |
 | Accesible desde navegador | Debe funcionar en Firefox y Chrome. |
 | Lenguaje programación | Se utilizará Java para su desarrollo. Podrán utilizarse otros lenguajes de soporte para el desarrollo Frontend, como Javascript. |
@@ -35,7 +35,7 @@ El sistema tiene una serie de requisitos funcionales, no funcionales y de inform
 
 ### REQUISITOS FUNCIONALES:
 
-| Requesito | Identificador | Descripción |
+| Requisito | Identificador | Descripción |
 | ------ | ------ | ------ |
 | Crear usuario | RFU_1 | Se necesita insertar usuarios en el servicio, almacenando la información establecida en el  RI_1. |
 | Modificar usuario | RFU_2 | Se necesita modificar datos de usuarios que ya se encuentren en el servicio, almacenando la nueva información establecida en el  RI_1. |
@@ -55,7 +55,7 @@ El sistema tiene una serie de requisitos funcionales, no funcionales y de inform
 
 ## REQUESITO DE INFORMACIÓN:
 
-| Requesito | Identificador | Descripción |
+| Requisito | Identificador | Descripción |
 | ------ | ------ | ------ |
 | Usuario | RI_1 | Se compone de los siguientes campos: - String Nombre - String Apellidos - String Username - String DNI - String correo - String clave - List<Comentario> listaComentarios - List<Libro> listaLibrosLeidos |
 | Libro | RI_2 | Se compone de los siguientes campos: - String Titulo - String autor - String ISBN - LocalDate fechaCreacion - LocalDate fechaInsercion - String imagen - String Descripcion - float valoracion |
