@@ -19,11 +19,11 @@ El Equipo 1 busca ofrecer una plataforma cómoda y segura para promover y facili
 ## DESCRIPCIÓN:
 Buscamos ofrecer una plataforma online accesible desde navegador que permita la creación de nuevos usuarios y acceso a de estos al servicio. Dentro de éste tendrá a su disposición el acceso a un “catálogo” de entradas de libros y, al acceder, tendrá acceso automático a un chat en vivo sobre dicho libro así como comentarios en la entrada referida a este.
 
-## REQUESITOS DEL SISTEMA:
+## REQUISITOS DEL SISTEMA:
 
 El sistema tiene una serie de requisitos funcionales, no funcionales y de información:
 
-### REQUESITOS NO FUNCIONALES:
+### REQUISITOS NO FUNCIONALES:
 
 | Requisito | Descripción |
 | ------ | ------ |
@@ -63,9 +63,9 @@ El sistema tiene una serie de requisitos funcionales, no funcionales y de inform
 
 ## CASOS DE USO:
 
-| Caso | Identificador | Descripción |
+| Caso | Identificador | Descripción | Actor |
 | ------ | ------ | ------ |
-| Crear usuario | CUU_1 | El sistema debe recibir información de un usuario nuevo para insertarlo. Pasos a seguir: - Usuario inserta información. - Sistema recoge información - Sistema comprueba identificador de usuario. - Sistema inserta usuario y notifica.|
+| Crear usuario | CUU_1 | El sistema debe recibir información de un usuario nuevo para insertarlo. Pasos a seguir: - Usuario inserta información. - Sistema recoge información - Sistema comprueba identificador de usuario. - Sistema inserta usuario y notifica.| Usuario
 | Modificar usuario | CUU_2 | El sistema debe recibir información nueva de un usuario existente para modificar sus datos. Pasos a seguir: - Usuario inserta información. - Sistema recoge información - Sistema comprueba identificador de usuario. - Sistema modifica usuario y notifica.|
 | Eliminar usuario | CUU_3 | El sistema debe recibir una petición de eliminación y el identificador de un usuario existente para eliminarlo. Pasos a seguir: - Usuario inserta identificador. - Sistema recoge información - Sistema comprueba identificador de usuario. - Sistema elimina usuario y notifica.|
 | Obtener usuarios | CUU_4 | El sistema debe obtener todos los datos de usuarios existentes en el sistema. Pasos a seguir: - Usuario pide todos los usuarios - Sistema los recoge y notifica|
