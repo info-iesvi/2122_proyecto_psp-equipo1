@@ -44,18 +44,18 @@ El sistema tiene una serie de requisitos funcionales, no funcionales y de inform
 | Crear usuario | RFU_1 | Se necesita insertar usuarios en el servicio, almacenando la información establecida en el  RI_1. |
 | Modificar usuario | RFU_2 | Se necesita modificar datos de usuarios que ya se encuentren en el servicio, almacenando la nueva información establecida en el  RI_1. |
 | Eliminar usuario | RFU_3 | Se necesita eliminar usuarios que ya se encuentren en el servicio, eliminandolo o estableciendo como inactivo  |
-| Obtener usuarios | RFU_4 | Se necesita obtener datos de usuarios almacenados en el servicio, recogiendo la información establecida en el  RI_1 en forma de lista de objetos de usuario. |
-| Obtener usuario por su identificador | RFU_5 | Se necesita obtener datos de usuarios almacenados en el servicio, recogiendo la información establecida en el  RI_1 en forma de objeto de usuario a partir de un identificador. |
+| Obtener usuarios | RFU_4 | Se necesita obtener datos de usuarios almacenados en el servicio, recogiendo la información establecida en el  RI_1 en forma de lista de usuarios. |
+| Obtener usuario por su identificador | RFU_5 | Se necesita obtener datos de usuarios almacenados en el servicio, recogiendo la información establecida en el  RI_1 (usuario) a partir de un identificador. |
 | Crear libro | RFL_1 | Se necesita insertar libros en el servicio, almacenando la información establecida en el  RI_2. |
 | Modificar libro | RFL_2 | Se necesita insertar libros en el servicio, almacenando la información establecida en el  RI_2. |
 | Eliminar libro | RFL_3 | Se necesita eliminar libros que ya se encuentren en el servicio, eliminandolo o estableciendo como inactivo. |
-| Obtener libros | RFL_4 | Se necesita obtener datos de libros almacenados en el servicio, recogiendo la información establecida en el  RI_2 en forma de lista de objetos de libro. |
-| Obtener libro por su identificador | RFL_5 | Se necesita obtener datos de libros almacenados en el servicio, recogiendo la información establecida en el  RI_2 en forma de objeto de libro a partir de un identificador. |
+| Obtener libros | RFL_4 | Se necesita obtener datos de libros almacenados en el servicio, recogiendo la información establecida en el  RI_2 en forma de lista de libros. |
+| Obtener libro por su identificador | RFL_5 | Se necesita obtener datos de libros almacenados en el servicio, recogiendo la información establecida en el  RI_2 (libro) a partir de un identificador. |
 | Escribir en chat | RFCH_1 | Se necesita enviar información en forma de mensaje desde el chat, de modo que llegue a todos los que se encuentre en el chat, en ese momento. |
 | Crear comentario | RFCO_1 | Se necesita insertar comentarios en el servicio, almacenando la información establecida en el  RI_3. |
 | Modificar comentario | RFCO_2 | Se necesita modificar datos de comentarios que ya se encuentren en el servicio, almacenando la nueva información establecida en el  RI_3. |
 | Eliminar comentario | RFCO_3 | Se necesita eliminar comentarios que ya se encuentren en el servicio, eliminandolo o estableciendo como inactivo. |
-| Obtener comentarios | RFCO_4 | Se necesita obtener datos de comentarios almacenados en el servicio, recogiendo la información establecida en el  RI_3 en forma de lista de objetos de comentario. |
+| Obtener comentarios | RFCO_4 | Se necesita obtener datos de comentarios almacenados en el servicio, recogiendo la información establecida en el  RI_3 (comentario) |
 
 ## REQUESITO DE INFORMACIÓN:
 

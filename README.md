@@ -1,21 +1,17 @@
 # PROYECTO READMINE
 
-IMAGEN
-
-#### Equipo 1 - 2ªDAM
-#### Curso 2021/2022
-
-#### Ángel de la Fuente Jiménez
-#### Miguel Ángel Vidal de Blanca
+#### Equipo 1 - 2ªDAM - Curso 2021/2022
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/logoReadMine.png)
+#### Desarrollado por Ángel de la Fuente Jiménez & Miguel Ángel Vidal de Blanca
 
 ## ÍNDICE:
 
-INTRODUCCIÓN
-DESCRIPCIÓN
-REQUESITOS DEL SISTEMA:
-REQUESITOS NO FUNCIONALES
-REQUESITOS FUNCIONALES
-REQUESITOS DE INFORMACIÓN
+ - INTRODUCCIÓN
+ - DESCRIPCIÓN
+ - REQUESITOS DEL SISTEMA:
+ - REQUESITOS NO FUNCIONALES
+ - REQUESITOS FUNCIONALES
+ - REQUESITOS DE INFORMACIÓN
 
 ## INTRODUCCIÓN:
 El Equipo 1 busca ofrecer una plataforma cómoda y segura para promover y facilitar el buen hábito lector de modo que se adapte a nuevos usuarios con ganas de conocer nuevos mundos, historias, relatos, asi como personas con quien compartirlos. Buscamos ofrecer un buen catálogo de entradas comentadas por nuestros usuarios y un acceso a chats en vivo.
@@ -29,7 +25,7 @@ El sistema tiene una serie de requisitos funcionales, no funcionales y de inform
 
 ### REQUESITOS NO FUNCIONALES:
 
-| Requesito | Descripción |
+| Requisito | Descripción |
 | ------ | ------ |
 | Accesible desde navegador | Debe funcionar en Firefox y Chrome. |
 | Lenguaje programación | Se utilizará Java para su desarrollo. Podrán utilizarse otros lenguajes de soporte para el desarrollo Frontend, como Javascript. |
@@ -39,27 +35,27 @@ El sistema tiene una serie de requisitos funcionales, no funcionales y de inform
 
 ### REQUISITOS FUNCIONALES:
 
-| Requesito | Identificador | Descripción |
+| Requisito | Identificador | Descripción |
 | ------ | ------ | ------ |
 | Crear usuario | RFU_1 | Se necesita insertar usuarios en el servicio, almacenando la información establecida en el  RI_1. |
 | Modificar usuario | RFU_2 | Se necesita modificar datos de usuarios que ya se encuentren en el servicio, almacenando la nueva información establecida en el  RI_1. |
 | Eliminar usuario | RFU_3 | Se necesita eliminar usuarios que ya se encuentren en el servicio, eliminandolo o estableciendo como inactivo  |
-| Obtener usuarios | RFU_4 | Se necesita obtener datos de usuarios almacenados en el servicio, recogiendo la información establecida en el  RI_1 en forma de lista de objetos de usuario. |
-| Obtener usuario por su identificador | RFU_5 | Se necesita obtener datos de usuarios almacenados en el servicio, recogiendo la información establecida en el  RI_1 en forma de objeto de usuario a partir de un identificador. |
+| Obtener usuarios | RFU_4 | Se necesita obtener datos de usuarios almacenados en el servicio, recogiendo la información establecida en el  RI_1 en forma de lista de usuarios. |
+| Obtener usuario por su identificador | RFU_5 | Se necesita obtener datos de usuarios almacenados en el servicio, recogiendo la información establecida en el  RI_1 (usuario) a partir de un identificador. |
 | Crear libro | RFL_1 | Se necesita insertar libros en el servicio, almacenando la información establecida en el  RI_2. |
 | Modificar libro | RFL_2 | Se necesita insertar libros en el servicio, almacenando la información establecida en el  RI_2. |
 | Eliminar libro | RFL_3 | Se necesita eliminar libros que ya se encuentren en el servicio, eliminandolo o estableciendo como inactivo. |
-| Obtener libros | RFL_4 | Se necesita obtener datos de libros almacenados en el servicio, recogiendo la información establecida en el  RI_2 en forma de lista de objetos de libro. |
-| Obtener libro por su identificador | RFL_5 | Se necesita obtener datos de libros almacenados en el servicio, recogiendo la información establecida en el  RI_2 en forma de objeto de libro a partir de un identificador. |
+| Obtener libros | RFL_4 | Se necesita obtener datos de libros almacenados en el servicio, recogiendo la información establecida en el  RI_2 en forma de lista de libros. |
+| Obtener libro por su identificador | RFL_5 | Se necesita obtener datos de libros almacenados en el servicio, recogiendo la información establecida en el  RI_2 (libro) a partir de un identificador. |
 | Escribir en chat | RFCH_1 | Se necesita enviar información en forma de mensaje desde el chat, de modo que llegue a todos los que se encuentre en el chat, en ese momento. |
 | Crear comentario | RFCO_1 | Se necesita insertar comentarios en el servicio, almacenando la información establecida en el  RI_3. |
 | Modificar comentario | RFCO_2 | Se necesita modificar datos de comentarios que ya se encuentren en el servicio, almacenando la nueva información establecida en el  RI_3. |
 | Eliminar comentario | RFCO_3 | Se necesita eliminar comentarios que ya se encuentren en el servicio, eliminandolo o estableciendo como inactivo. |
-| Obtener comentarios | RFCO_4 | Se necesita obtener datos de comentarios almacenados en el servicio, recogiendo la información establecida en el  RI_3 en forma de lista de objetos de comentario. |
+| Obtener comentarios | RFCO_4 | Se necesita obtener datos de comentarios almacenados en el servicio, recogiendo la información establecida en el  RI_3 en forma de lista de comentarios. |
 
 ## REQUESITO DE INFORMACIÓN:
 
-| Requesito | Identificador | Descripción |
+| Requisito | Identificador | Descripción |
 | ------ | ------ | ------ |
 | Usuario | RI_1 | Se compone de los siguientes campos: - String Nombre - String Apellidos - String Username - String DNI - String correo - String clave - List<Comentario> listaComentarios - List<Libro> listaLibrosLeidos |
 | Libro | RI_2 | Se compone de los siguientes campos: - String Titulo - String autor - String ISBN - LocalDate fechaCreacion - LocalDate fechaInsercion - String imagen - String Descripcion - float valoracion |
