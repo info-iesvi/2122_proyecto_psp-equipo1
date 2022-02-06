@@ -80,6 +80,39 @@ El sistema tiene una serie de requisitos funcionales, no funcionales y de inform
 | Modificar comentario | CUCO_2 | El sistema debe recibir información nueva de un comentario existente para modificar sus datos. Pasos a seguir: - Usuario inserta información. - Sistema recoge información - Sistema comprueba identificador de comentario. - Sistema modifica comentario y notifica.| Usuario
 | Eliminar comentario | CUCO_3 | El sistema debe recibir una petición de eliminación y el identificador de un comentario existente para eliminarlo. Pasos a seguir: - Usuario inserta identificador. - Sistema recoge información - Sistema comprueba identificador de comentario. - Sistema elimina comentario y notifica.| Usuario
 | Obtener comentarios | CUCO_4 | El sistema debe obtener todos los datos de comentarios existentes en el sistema. Pasos a seguir: - Usuario pide todos los comentarios - Sistema los recoge y notifica| Usuario
+ 
+ ### DIAGRAMA DE CLASES:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/Diagrama%20de%20clase.drawio.png)
+ 
+ ### DIAGRAMA DE ENTIDAD-RELACIÓN:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/Diagrama%20Entidad-Relaci%C3%B3n%20Readmine%20DIA.png)
+ 
+ ### GUI:
+ 
+ ## CREAR USUARIO:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/CreaUsuario.png)
+ 
+ ## LOGIN:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/Login.png)
+ 
+ ## BIBLIOTECA:
+
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/BibliotecaEquipo1.png)
+ 
+ ## ENTRADA DE LIBRO:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/EntradaLibro.png)
+ 
+ ## CHAT:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/ChatReadmine.png)
+ 
+ 
+ 
 
 
 
