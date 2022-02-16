@@ -89,7 +89,7 @@ El sistema tiene una serie de requisitos funcionales, no funcionales y de inform
  
  ### DIAGRAMA DE ENTIDAD-RELACIÓN:
  
- ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/Diagrama%20Entidad-Relaci%C3%B3n%20Readmine%20DIA.png)
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/Diagrama%20Entidad-Relaci%C3%B3n%20Readmine%20DIA.dia)
  
  ### GUI:
  
