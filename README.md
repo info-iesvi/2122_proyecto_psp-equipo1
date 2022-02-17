@@ -12,6 +12,8 @@
  - REQUESITOS NO FUNCIONALES
  - REQUESITOS FUNCIONALES
  - REQUESITOS DE INFORMACIÓN
+ - CODIFICACIÓN DE MICROSERVICIO DE USUARIO EN MEMORIA
+ - CODIFICACIÓN DE MICROSERVICIO DE USUARIO EN MONGO
 
 ## INTRODUCCIÓN:
 El Equipo 1 busca ofrecer una plataforma cómoda y segura para promover y facilitar el buen hábito lector de modo que se adapte a nuevos usuarios con ganas de conocer nuevos mundos, historias, relatos, asi como personas con quien compartirlos. Buscamos ofrecer un buen catálogo de entradas comentadas por nuestros usuarios y un acceso a chats en vivo.
@@ -83,11 +85,11 @@ El sistema tiene una serie de requisitos funcionales, no funcionales y de inform
  
  ### DIAGRAMA DE CLASES:
  
- ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/Diagrama%20de%20clase.drawio.png)
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/Diagrama%20de%20clase.drawio%20(1).png)
  
  ### DIAGRAMA DE ENTIDAD-RELACIÓN:
  
- ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/Diagrama%20Entidad-Relaci%C3%B3n%20Readmine%20DIA.png)
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/Diagrama%20Entidad-Relaci%C3%B3n%20Readmine%20DIA.dia)
  
  ### GUI:
  
@@ -109,7 +111,137 @@ El sistema tiene una serie de requisitos funcionales, no funcionales y de inform
  
  ## CHAT:
  
- ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/ChatReadmine.png)
+ ![Texto alternativo]()
+ 
+ ## CODIFICACIÓN DE MICROSERVICIO DE USUARIO EN MEMORIA
+ 
+ ### GETALL
+ 
+ Como podemos ver en este primer método estamos obteniendo la lista de usuarios almacenados en memoria, la cual se encuentra declarada como variable estática dentro de la propia clase, por lo que será accesible para el resto. El método nos devuelve un ResponseEntity con los datos y un estado OK, ya que independientemente de que la lista se encuentre con elementos o no, la resolución será satisfactoria.
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/GetAllUsuario.PNG)
+ 
+ Si lo probamos con Postman obtendremos el siguiente resultado, al no existir ningún tipo de dato insertado aún en memoria.
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/PruebaGetAllUsuarioPostman.PNG)
+ 
+ ### GET
+ 
+ Método para la obtención concreta de usuarios a partir de un identificador, siendo en este caso la clave primaria de la entidad el DNI del usuario. Del mismo modo que ocurre con el método anterior se devuelve un ResponseEntity con los datos y el tipo de código de respuesta. Para distinguir entre uno y otro se procede a recorrer la lista de usuarios para encontrar si existe una coincidencia entre el DNI del usuario pasado y algún usuario de dentro de la lista. En caso afirmativo, el estado de respuesta es OK y los datos son recogidos. En caso contrario el código es Not Found y los datos serán NULL.
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/MentodoGetUsuario.PNG)
+ 
+ Procedamos a probarlo en Postman:
+ 
+  ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/PruebaGetUsuarioPostman.PNG)
+ 
+ ### CREATE
+ 
+ Método que nos va a permitir insertar nuevos usuarios en la lista. Para ello haremos uso del método add y devolveremos un ResponseEntity, como previamente hemos hecho:
+ 
+  ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/MetodoCreateUsuario.PNG)
+ 
+ La prueba en Postman consigue con éxito la adhesión del elemento nuevo en la lísta.
+ 
+  ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/PruebaCreateUsuarioPostman.PNG)
+ 
+ Como ya existen elementos en la lista, podemos ver los resultados también  el el muestreo de todos los elementos de la lista, es decir el método GetAll que ya hemos explicado:
+ 
+   ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/PruebaGetAllUsuarioMongoTrasDeletePostman.PNG)
+ 
+ ### MODIFY
+ 
+ Método en el que modificaremos un elemento existente en la lista en base al DNI pasado por parámetros. Para ello primero comprobamos que existe dicho usuario en la lista. Si existe removemos el viejo y agregamos el nuevo en su lugar. Dependiendo de si se ha producido o no la modificación, nuestra variable booleana nos llevará a un ResponseEntity con un código u otro:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/MetodoModifyUsuario.PNG)
+ 
+ Ahora vamos a realizar algunas comprobaciones con Postman:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/PruebaModifyUsuarioPostman.PNG)
+ 
+ Como podemos ver se ha modificado el usuario correcto, con los datos nuevos (Su nombre). Ahora vamos a proceder a buscarlo a partir de su DNI:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/PruebaGetDelUsuarioModificadoPostman.PNG)
+ 
+ Como podemos comprobar los cambios también son visibles y recuperables desde este método, ahora que existen datos que mostrar.
+ 
+ ### DELETE
+ 
+ Método para eliminar objetos de usuario de la lista. Para ello simplemente se recibe el DNI del usuario de modo que al recorrer la lista, si se encuentra un usuario con dicho DNI se notifica al programa con una variable booleana y se procede al borrado. En este caso como es un método de eliminación no queremos que devuelva un ResponseEntity con datos de objetos modelados, sino directamente un String con el mensaje propio a mostrar:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/MetodoDeleteUsuario.PNG)
+ 
+ Procedamos finalmente con la prueba:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/PruebaDeleteUsuarioPostman.PNG)
+ 
+ ## CODIFICACIÓN DE MICROSERVICIO DE USUARIO EN MONGO
+ 
+ ### GETALL
+ 
+ De nuevo nos encontramos con el método de obtención de todos los usuarios (en formato plano o VO) que se encuentren en nuestra base de datos MongoDB. Como la obtención es de tipo VO, estos son recogidos en una lista de elementos de este tipo pero a la hora de trabajar con ellos necesitamos convertirlos a DTO (Para ello he creado una clase Conversor que nos ofrezca la utilidad de alternar entre un tipo de objeto y otro).
+ 
+ Como podemos comprobar, al proceder con la captura de datos se devolverá en todo caso una lista de usuarios DTO dentro de un ResponseEntity con el código OK, ya que siempre se devolverá una lista, tenga o no elementos.
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/MetodoGetAllUsuarioMongo.PNG)
+ 
+ Al igual que hicimos con la codificación del programa en Memoria vamos a proceder con las pruebas en Postman. Como podemos comprobar se nos devuelven los datos correctamente (Ha encontrado datos debido a que mientras programaba le microservicio he realizado inserciones):
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/PruebaGetAllUsuarioMongoPostman.PNG)
+ 
+ ### GET
+ 
+ Método para obtener un usuario concreto almacenado en la base de datos. Para ello primero verificaremos si existe algún usuario con ese identificador mediante el método findByID, que nos ofrece nuestro repositorio MongoDB. En caso de que lo encuentre nos devuelve un tipo de dato Optional. Si nos lo ha devuelto (Lo cual comprobamos con el método isPresent) obtenemos el tipo de dato VO mediante método get y devolvemos un ResponseEntity con el usuario en su versión DTO y un código OK. En caso opuesto se devolverá un usuario vacío y código Not Found.
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/MetodoGetUsuarioMongo.PNG)
+ 
+Como siempre procedemos con las pruebas en Postman:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/PruebaGetUsuarioMongoPostman.PNG)
+ 
+ ### CREATE
+ 
+ Método para la inserción de nuevos usuarios en la base de datos. Recordemos que para la inserción en Base de datos tenemos que usar objetos de tipo VO, por lo que primeramente procederemos a comprobar si ya existe dicho usuario en la base de datos, evitando inconsistencias de datos o duplicidad. En caso de que NO exista en la base de datos procederemos a almacenarlo, pero como lo que estamos recibiendo como parámetro es un DTO tendremos que convertirlo en VO gracias a nuestra clase Conversor. Como siempre dependiendo del éxito o fracaso de nuestro intento de inserción procederemos a devolver un ResponseEntity con un tipo de código y otro.
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/MetodoCreateUsuarioMongo.PNG)
+ 
+ Procedemos con las pruebas en Postman:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/PruebaCreateUsuarioMongoPostman.PNG)
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/PruebaGetAllTrasCreateUsuarioMongoPostman.PNG)
+ 
+ ### DELETE
+ 
+ Método para el borrado de usuarios en nuestra base de datos. Para ello utilizamos el DNI del usuario y comprobamos previamente esi ese usuario existente en base de datos. Si existe obtenemos un Optional presente, por lo que procederemos a borrar el elemento. Como siempre la devolución consta de un ResponseEntity con los datos y el código correspondiente.
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/MetodoDeleteMongo.PNG)
+ 
+ Procedemos a realizar las pruebas en Postman:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/PruebaDeleteUsuarioMongoPostman.PNG)
+ 
+ Como podemos ver, al buscar por el DNI del usuario borrado obtenemos el código de error Not Found y un usuario vacío.
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/PruebaDeleteUsuarioMongoNullPostman.PNG)
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/PruebaGetAllUsuarioMongoTrasDeletePostman.PNG)
+ 
+ ### MODIFY
+ 
+ Método para la modificación de un usuario de la base de datos a partir de su DNI. Para ello comprobamos previamente que exista el usuario en la base de datos y , en caso afirmativo, lo obtenemos como Optional y procedemos a insertar en su lugar los datos nuevos. Esto lo hacemos simplemente con el método save del repositorio de mongo, ya que aunque sea el mismo método utilizado para insertar nuevos elementos, si su identificador coincide en vez de insertar lo que hará es modificar los datos diferentes al estado previo. Como siempre dependo del resultado se devuelve aun ResponseEntity con un código u otro.
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/MetodoModifyUsuarioMongo.PNG)
+ 
+ Procedemos con las últimas comprobaciones de Postman:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/PruebaModifyUsuarioMongoPostman.PNG)
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/PruebaGetUsuarioMongoTrasModifyPostman.PNG)
+ 
+ 
+
+ 
  
  
  
