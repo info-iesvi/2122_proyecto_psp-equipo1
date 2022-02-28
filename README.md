@@ -264,7 +264,7 @@ Documentación de referencia: https://docs.spring.io/spring-framework/docs/curre
 
  - Controller: Directorio que contiene la clase ChatController. Esta clase es la que se encarga de recibir las peticiones desde nuestra interfaz en REACT.
  
- ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat2.PNG)
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat2.png)
  
 Para recibir un mensaje (mediante la anotación @MessageMaping) y devolverlo a un destino concreto (mediante la anotación @SendTo). Actualmente se encuentra preparado para recibir mensajes desde la ruta “message” y devolverlos a la sala de chat general (ésta es precisamente la que nos interesa, porque la idea es que la sala de chat sea general para nuestro libro, no enviando mensajes privados). Además en esta clase se ha establecido un método recMessage privado, para que no llegue la respuesta a todo el chat general sino solo al usuario concreto con el que se mantiene la conversación.
 
@@ -275,18 +275,18 @@ En ambos casos se utiliza la anotación @Payload para la recepción del mensaje,
  
  Y posteriormente se define un ENUM denominado Status, que indica el estado que tendrá cada mensaje en su recepción y envío, con estos valores:
  
-  ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat4.PNG)
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat4.png)
  
 Donde JOIN hace referencia a la adhesión de un nuevo cliente al chat, MESSAGE indica que el mensaje se está enviado o devolviendo y LEAVE indica que el cliente ha abandonado el chat.
 
 A continuación vamos a ver cómo se gestiona desde REACT el servicio de CHAT.
 Lo primero que hay que destacar es que para toda la gestión del chat se ha creado un componente denominado chat-component:
  
-  ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat5.PNG)
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat5.png)
  
  En el encontraremos lo siguiente:
  
-  ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat6.PNG)
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat6.png)
  
 En primer lugar declaramos un cliente de stomp y lo establecemos en nulo para dale valor al ejecutar el método connect(). Posteriormente veremos que este es el cliente de socket javascript que va a permitir vincularnos con nuestro servicio de chat en Java para hacer peticiones hacia “ws”, que es la ruta mapeada que ya pudimos ver anteriormente en el servicio.
 
@@ -296,16 +296,16 @@ Método connect. Como hemos comentado brevemente con anterioridad, este método 
 Valores extras de la conexión. como no queremos indicar ninguno estableceremos las llaves simples.
 Método a ejecutar en caso de éxito en la conexión. En nuestro caso ese método será onConnected.
  
-   ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat7.PNG)
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat7.png)
  
 Si nos fijamos se encarga de darle valor a UserData y establece la conexión en TRUE, permitiéndonos acceder al chat concreto. Para el acceso se ofrecen dos vertientes, la publica (que es la que nos interesa) y la privada (para hablar con usuarios concretos), manejadas ambas con el método suscribe.
 Método a ejecutar en caso de error en la conexión. En nuestro caso será el método onError.
  
-   ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat8.PNG)
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat8.png)
 
 Los siguientes método a destacar son estos dos:
  
-   ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat9.PNG)
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat9.png)
 
 userJoin: Como podemos deducir éste método se encarga de enviar al servicio un mensaje de petición de acceso al sistema de chat, de modo que envía tanto los datos del usuario que se encuentra conectado como el estados correspondiente del ENUM que ya comentamos en su momento, en este caso con el valor JOIN.
 
@@ -313,37 +313,37 @@ onMessageReceived: Método que se encarga de recibir y manejar los mensajes envi
 
 Los siguientes dos métodos se encargan de manejar los mensajes y de enviar los valores de estos:
 
-   ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat10.PNG)
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat10.png)
  
 handleMessage: Es un método que recibe el valor del elemento destacado, que es precisamente el input de escritura y mensajes que se encuentran en el chat. Este método se ejecuta cada vez que cambia el valor del campo, de modo que se mantenga siempre actualizado.
 sendValue: Cuando ya queramos enviar el mensaje al servicio comprobaremos que el socket del cliente existe y en caso afirmativo enviaremos el mensaje con los datos del usuario y el estado correspondiente.
 
 Con esto ya tendríamos el chat de modo funcional. Simplemente a la hora de ejecutar el método return de nuestro componente función de REACT para mostrar datos por pantalla deberemos comprobar si el usuario está conectado:
 
-   ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat11.PNG)
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat11.png)
  
 En caso afirmativo mostraremos la sala de chat con su cajas de texto y su botón de enviar mensajes y listado de usuarios conectados a la sala. En caso negativo se mostrará un pseudocomponente que se encargue de manejar la conexión del usuario para permitirle el acceso al chat:
 
- ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat12.PNG)
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat12.png)
 
 Si nos fijamos concretamente lo que maneja este método registrerUser, el cual ejecutará directamente el método connect que ya explicamos anteriormente.
  
- ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat13.PNG)
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat13.png)
 
 A continuación vamos a hacer una pequeña muestra visual de ejecución. Lo primero que tendremos al acceder al programa es un catálogo de libros, el cual se obtiene mediante el microservicio de libros y el componente book-list.component. Una vez dentro pulsaremos sobre el botón del chat:
 
- ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat14.PNG)
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat14.png)
 
 Nos pedirá introducir nuestro usuario para acceder al chat.
  
-  ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat15.PNG)
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat15.png)
  
 Con ello accederemos al chat y aparecerá nuestro nombre de usuario:
  
-   ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat16.PNG)
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat16.png)
  
 Ahora haremos lo mismo con otro usuario a que llamaremos “Pepesito” y enviará un mensaje a nuestro usuario principal:
  
-   ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat17.PNG)
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat17.png)
  
-   ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat18.PNG)
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat18.png)
