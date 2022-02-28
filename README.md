@@ -246,11 +246,11 @@ Como siempre procedemos con las pruebas en Postman:
  
 Para la implementación del chat hemos establecido un microservicio con Spring que se enlaza directamente con las peticiones realizadas desde REACT mediante JavaScript. El microservicio tiene la siguiente estructura:
  
- ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/arquitecturaChat.PNG)
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/arquitecturaChat.png)
  
   - Config: Directorio que contiene la clase WebSocketConfig, la cual es una clase de configuración de Spring con el siguiente contenido:
  
-![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat1.PNG)
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat1.png)
  
 Lo primero que encontramos es una anotación de configuración, la cual indica a Spring que la clase se debe utilizar como un componente de configuración del sistema. Posteriormente encontramos la anotación @EnableWebSocketMessageBroker, la sirve para indicar que la mensajería mediante nuestro WebSocket se va a habilitar.
 
