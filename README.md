@@ -15,7 +15,7 @@
  - CODIFICACIÓN DE MICROSERVICIO DE USUARIO EN MEMORIA
  - CODIFICACIÓN DE MICROSERVICIO DE USUARIO EN MONGO
  - CODIFICACIÓN DE MICROSERVICIO DE CHAT WEB E IMPLEMENTACIÓN EN REACT
- - CODIFICACIÓN DE MICROSERVICIO DE LIBRO EN MONGO
+ - CODIFICACIÓN + FRONTEND DE MICROSERVICIO DE LIBRO EN MONGO
  - CODIFICACIÓN DE MICROSERVICIO DE COMENTARIO EN MONGO
 
 ## INTRODUCCIÓN:
@@ -347,3 +347,132 @@ Ahora haremos lo mismo con otro usuario a que llamaremos “Pepesito” y enviar
 ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat17.png)
  
 ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat18.png)
+ 
+ 
+ ## CODIFICACIÓN + FRONTEND DE MICROSERVICIO DE LIBRO EN MONGO
+ 
+ Para la creación del microservicio de libros para la persistencia de sus datos en MongoDB se ha establecido la siguiente arquitectura:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/arquitecturaLibros.png)
+ 
+ Y una vinculación directa con el puerto 8085, establecida directamente en el documento application.properties.
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros1.png)
+ 
+A continuación vamos a ir viendo paso a paso cada elemento del microservicio. En primer lugar vamos a empezar con el controlador, el cual se compone de la clase LibroController y la interfaz que implementa: LibroAPI.
+
+La interfaz se compone de las siguientes declaraciones:
+
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros2.png)
+ 
+Como podemos comprobar es un CRUD simple para la persistencia de datos. Estos métodos deberán ser implementados por el controlador:
+
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros3.png)
+ 
+Al igual que ocurría con el microservicio de libros contamos con la anotación @RestController para indicar que estamos creando un componente controlador para una API REST. Como en el controlador tenemos que recibir las peticiones del cliente las deberemos mapear con una dirección, que en este caso es “libros”. Una vez establecido el controlador se implementan los métodos CRUD de la interfaz comentado anteriormente y se ejecutan sus funciones del mismo modo que comentamos anteriormente con el microservicio de usuarios, destacando que en este caso tanto para modificar, eliminar y para obtener un libro concreto se recibe por parámetros el identificador de éste.
+
+Para la ejecución de los métodos del servicio utilizamos la anotación @Autowired haciendo referencia a LibroService, servicio que implemente las acciones directas con la base de datos de MongoBD mediante métodos del repositorio.
+
+Ahora vamos a proceder a hablar del modelo, el cual se compone de las clases VO y DTO del propio modelo de libros:
+
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros4.png)
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros5.png)
+ 
+Como podemos ver ambos se componen de los mismos datos, solo que para el devenir de la aplicación solo se hará uso de VO para la persistencia en Mongo, mientras que para todo el trabajo y recepción de estos se utilizaran DTOs. Para ambos casos se han utilizado anotaciones de Lombok que ya explicamos en su momento cuando hablábamos del micro servicio de usuarios, las cuales reducen mucho el código a escribir.
+
+Con respecto a la interfaz LibroRepository es una interfaz que simplemente extiende del repositorio de Mongo y que utilizaremos para poder aplicar los métodos de esta.
+
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros6.png)
+ 
+Entrando a hablar de la clase de utilizar de este microservicio tenemos un conversor que se encarga de convertir objetos DTO en VO y viceversa. En su momento ya fue explicado uno muy similar par ale microservicio de usuarios:
+
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros7.png)
+ 
+Finalmente toca hablar del servicio. Este se compone de dos apartados: La implementación y la interfaz. La interfaz se denomina LibroService y se encarga de declarar los métodos a implementar:
+
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros8.png)
+ 
+ Pero en la implementación es donde ya sí que encontramos más que comentar. Empezaremos con el primer método:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros9.png)
+ 
+Como podemos ver, al igual que ocurría con el microservicio de usuarios tenemos un método para obtener todos los libros almacenados en la base de datos. Para ello se declara una lista de objetos DTO a devolver, otra de VO donde almacenar los datos obtenidos y en caso de que existan se convertirá en DTO para recogerse y enviarse al usuario. En ambos casos media un ResponseEntity para obtener no oslo el dato sino el estado de la respuesta, ya sea afirmativa o negativa. 
+
+Ahora vamos a proceder con el método create:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros10.png)
+ 
+Como podemos ver en un método que se encarga de recibir un DTO, lo convierte en VO gracias a nuestro conversor y lo inserta en la base de datos. Si todo ha ido bien devolverá un ResponseEntity con estado OK y en caso opuesto con un estado negativo.
+
+Para la obtención de un libro concreto a partir de us ISBN tenemos el método get:
+
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros11.png)
+ 
+Como podemos ver para su funcionamiento simplemente se recibe el ISBN del libro y se busca mediante el método del repositorio findByID. En ambos casos se devuelve un Optional y, si está presente querrá decir que se ha encontrado el elemento, por lo que devolveremos el ResponseEntity correspondiente en base a dicha respuesta.
+
+Para la modificación de libros tenemos el método modify:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros12.png)
+ 
+Del mismo modo que en el microservicio de usuarios este método recibe el identificador y el nuevo elemento. Si existe ya un elemento con dicho identificador es que puede ser modificado, por lo que procedemos a convertir el DTO recibido en VO y lo almacenamos con el método del repositorio SAVE utilizando el mismo ID, de modo que no se repita el elemento en el repositorio  se apliquen nuevos datos.
+
+Finalmente tenemos el método de eliminación de libros, el método save:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros13.png)
+ 
+Al igual que ocurría en el caso del microservicio de usuarios el método recibe el identificador del elemento a borrar y en caso de que exista, mediante el miedo findById, se eliminará de la base de datos y se enviará un ResponseEntity acorde a la situación dada.
+
+Ahora que hemos comprobado el funcionamiento del microservicio vamos a ver su actuación sobre el FRONTEND:
+
+Lo primero que tenemos que saber es que para mostrar los libros hemos creado un componente en REACT denominado books-list-component, el cual mostrará cada libro almacenado en la base de datos. cada uno de esos libros obtienen su formato gracias a un componente hijo de books-list-component, el componente book-component:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros14.png)
+ 
+Empezando con el componente padre lo primero que tenemos que ver es que nada más iniciarse se ejecuta el método componentDidMount, el cual ejecuta un método retrieveBooks para obtener los libros de la base de datos:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros15.png)
+ 
+Como podemos ver el método retrieve lo que hace es ejecutar el método getAll de BookDataService, que es un componente de enlace para apis rest que podemos ver aqui:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros16.png)
+ 
+Básicamente parte de la configuración web del componente http-common-book para declarar la ejecución de peticiones http de tipo get, post, delete y put. Gracias a este servicio conseguimos ejecutar llamamientos directos a nuestro microservicio. Para que funcione obviamente necesitamos tener configurado correctamente el componente http-common-book, el cual tiene el siguiente contenido:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros17.png)
+ 
+Como podemos ver implementamos una librería axios, la cual nos ofrece métodos http para llamamientos a servicios API REST. Requiere una URL de base con el puerto que se mantengan a la escucha, en este caso el 8085.
+
+Volviendo con nuestro FRONT de listado de libros, una vez que se cargan los libros y se almacenan en el estado books de nuestro componente (gestionado mediante promesas en REACT):
+
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros18.png)
+
+Posteriormente encontramos nuestro renderizador:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros19.png)
+
+Como podemos ver partimos de especificar que vamos a hacer uso del estado books. En el return mapeamos cada uno de los libros de modo que consigamos un loop funcional y por cada elemento mostraremos un componente Book, al que pasamos como parámetros el ISBN y la IMAGEN.
+
+El componente Book por su parte tiene la siguiente estructura:
+
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros20.png)
+ 
+Como podemos ver es mucho más simplificada. Simplemente recibimos la imagen desde el elemento padre a partir de sus props y establecemos una serie de divs para la imágen y presentación, así como los botones de CHAT y de VER MÁS. El de chat nos llevará directamente a la pantalla de inserción de usuario y el de VER MÁS nos llevará a la entrada concreta del libro en cuestión a partir de su ISBN, donde podremos ver los comentarios concretos y que existen sobre ese libro así como una breve descripción sobre este y sus datos específicos.
+
+Visualmente la interacción por parte dle usuario quedaría de la siguiente manera: A la hora de acceder la sistema vería el listado de este modo:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros21.png)
+ 
+Como podemos ver el método getAll ha recogido todos los libros y por cada uno muestra su imagen y ambos botones. Si pulsamos en VER MÁS podríamos ver el componente de post de libros, el cual simplemente recibe el ISBN del libro en cuestión desde la ruta y a partir de ahí carga sus correspondientes datos:
+
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros22.png)
+ 
+Como podemos ver en la zona inferior encontramos los comentarios, pero los explicaremos en el siguiente apartado más detenidamente.
+ 
+
+
