@@ -16,7 +16,7 @@
  - CODIFICACIÓN DE MICROSERVICIO DE USUARIO EN MONGO
  - CODIFICACIÓN DE MICROSERVICIO DE CHAT WEB E IMPLEMENTACIÓN EN REACT
  - CODIFICACIÓN + FRONTEND DE MICROSERVICIO DE LIBRO EN MONGO
- - CODIFICACIÓN DE MICROSERVICIO DE COMENTARIO EN MONGO
+ - CODIFICACIÓN + FRONTEND DE MICROSERVICIO DE COMENTARIO EN MONGO
 
 ## INTRODUCCIÓN:
 El Equipo 1 busca ofrecer una plataforma cómoda y segura para promover y facilitar el buen hábito lector de modo que se adapte a nuevos usuarios con ganas de conocer nuevos mundos, historias, relatos, asi como personas con quien compartirlos. Buscamos ofrecer un buen catálogo de entradas comentadas por nuestros usuarios y un acceso a chats en vivo.
@@ -474,5 +474,133 @@ Como podemos ver el método getAll ha recogido todos los libros y por cada uno m
  
 Como podemos ver en la zona inferior encontramos los comentarios, pero los explicaremos en el siguiente apartado más detenidamente.
  
+## CODIFICACIÓN + FRONTEND DE MICROSERVICIO DE COMENTARIO EN MONGO
+ 
+Para la creación del microservicio de comentarios para la persistencia de sus datos en MongoDB se ha establecido la siguiente arquitectura:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/arquitecturaComentarios.png)
+ 
+Y una vinculación directa con el puerto 8084, establecida directamente en el documento application.properties.
+
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario1.png)
+ 
+A continuación vamos a ir viendo paso a paso cada elemento del microservicio. En primer lugar vamos a empezar con el controlador, el cual se compone de la clase ComentarioController y la interfaz que implementa: ComentarioAPI.
+
+La interfaz se compone de las siguientes declaraciones:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario2.png)
+ 
+Como podemos comprobar es un CRUD simple para la persistencia de datos. Estos métodos deberán ser implementados por el controlador:
+
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario3.png)
+ 
+Al igual que ocurría con el microservicio de libros contamos con la anotación @RestController para indicar que estamos creando un componente controlador para una API REST. Como en el controlador tenemos que recibir las peticiones del cliente las deberemos mapear con una dirección, que en este caso es “comentario”. Una vez establecido el controlador se implementan los métodos CRUD de la interfaz comentado anteriormente y se ejecutan sus funciones del mismo modo que comentamos anteriormente con el microservicio de usuarios o de libros, destacando que en este caso tanto para modificar, eliminar y para obtener un libro concreto se recibe por parámetros el identificador de éste.
+
+Para la ejecución de los métodos del servicio utilizamos la anotación @Autowired haciendo referencia a ComentarioService, servicio que implemente las acciones directas con la base de datos de MongoBD mediante métodos del repositorio.
+
+Ahora vamos a proceder a hablar del modelo, el cual se compone de las clases VO y DTO del propio modelo de libros:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario4.png)
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario5.png)
+
+Como podemos ver ambos se componen de los mismos datos, solo que para el devenir de la aplicación solo se hará uso de VO para la persistencia en Mongo, mientras que para todo el trabajo y recepción de estos se utilizaran DTOs. Para ambos casos se han utilizado anotaciones de Lombok que ya explicamos en su momento cuando hablábamos del micro servicio de usuarios o de libros, las cuales reducen mucho el código a escribir.
+
+Con respecto a la interfaz ComentarioRepository es una interfaz que simplemente extiende del repositorio de Mongo y que utilizaremos para poder aplicar los métodos de esta.
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario6.png)
+
+Entrando a hablar de la clase de utilizar de este microservicio tenemos un conversor que se encarga de convertir objetos DTO en VO y viceversa. En su momento ya fue explicado uno muy similar par ale microservicio de usuarios:
+
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario7.png)
+ 
+Finalmente toca hablar del servicio. Este se compone de dos apartados: La implementación y la interfaz. La interfaz se denomina ComentarioService y se encarga de declarar los métodos a implementar:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario8.png)
+ 
+Pero en la implementación es donde ya sí que encontramos más que comentar. Empezaremos con el primer método:
+
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario9.png)
+ 
+Como podemos ver, al igual que ocurría con el microservicio de usuarios tenemos un método para obtener todos los libros almacenados en la base de datos. Para ello se declara una lista de objetos DTO a devolver, otra de VO donde almacenar los datos obtenidos y en caso de que existan se convertirá en DTO para recogerse y enviarse al usuario. En ambos casos media un ResponseEntity para obtener no solo el dato sino el estado de la respuesta, ya sea afirmativa o negativa. 
+
+Ahora vamos a proceder con el método create:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario10.png)
+ 
+Como podemos ver en un método que se encarga de recibir un DTO, lo convierte en VO gracias a nuestro conversor y lo inserta en la base de datos. Si todo ha ido bien devolverá un ResponseEntity con estado OK y en caso opuesto con un estado negativo.
+
+Para la obtención de un comentario concreto a partir de su id tenemos el método get:
+
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario11.png)
+ 
+Como podemos ver para su funcionamiento simplemente se recibe el id del comentario en cuestión y se busca mediante el método del repositorio findByID. En ambos casos se devuelve un Optional y, si está presente querrá decir que se ha encontrado el elemento, por lo que devolveremos el ResponseEntity correspondiente en base a dicha respuesta.
+
+Para la modificación de libros tenemos el método modify:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario12.png)
+ 
+Del mismo modo que en el microservicio de usuarios este método recibe el identificador y el nuevo elemento. Si existe ya un elemento con dicho identificador es que puede ser modificado, por lo que procedemos a convertir el DTO recibido en VO y lo almacenamos con el método del repositorio SAVE utilizando el mismo ID, de modo que no se repita el elemento en el repositorio  se apliquen nuevos datos.
+
+Finalmente tenemos el método de eliminación de comentarios, el método delete:
+
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario13.png)
+ 
+Al igual que ocurría en el caso del microservicio de usuarios el método recibe el identificador del elemento a borrar y en caso de que exista, mediante el miedo findById, se eliminará de la base de datos y se enviará un ResponseEntity acorde a la situación dada.
+
+Ahora que hemos comprobado el funcionamiento del microservicio vamos a ver su actuación sobre el FRONTEND:
+
+Lo primero que tenemos que saber es que para mostrar los comentarios hemos creado un componente en REACT denominado commentlist-component, el cual mostrará cada comentario almacenado en la base de datos siempre que coincida con el libro que se está visionando en ese momento. esto se debe a que los comentarios solo son visibles dentro de la entrada o post de cada libro. Algo que podemos sacar en claro con esto es que el componente de muestreo de comentarios no deja realmente de ser un componente hijo del componente que muestra la entrada individual de cada libro, es decir el componente individual.post.book.component.
+
+Empezando con el componente padre lo primero que tenemos que ver es que nada más iniciarse se ejecuta el método useEffect, el cual ejecuta un método retrieveBook para obtener el libro de la base de datos que coincida con el ISBN que obtiene por el PATH de la página:
+
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario14.png)
+ 
+Para ello utiliza una promesa de REACT que, al recibir respuesta, obtiene los datos que deseamos y los setea en el estado del componente. Como en este caso es un componente de tipo función, su estado se define mediante constraints:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario15.png)
+ 
+Como podemos ver el método retrieve lo que realmente ejecuta para obtener los datos del libro en cuestión es el método get de BookDataService, que es un componente de enlace para apis rest que ya explicamos anteriormente cuando desarrollamos la codificación del microservicio de libros.
 
 
+Básicamente parte de la configuración web del componente http-common-book para declarar la ejecución de peticiones http de tipo get, post, delete y put. Gracias a este servicio conseguimos ejecutar llamamientos directos a nuestro microservicio. Para que funcione obviamente necesitamos tener configurado correctamente el componente http-common-book y posteriormente encontraremos nuestro return:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario16.png)
+ 
+En esencia muestra una serie de etiquetas para dar formato a la página y haciendo uso de los datos obtenidos y almacenados en los constraints.
+
+Si nos fijamos en la zona remarcada, al final del post o entrada se hace el llamamiento al componente de listado de comentarios, que es el que vamos a analizar y al cual se le pasa como propiedad el ISBN del libro.
+
+El componente de listado de comentarios, al recibir el ISBN del libro ejecuta el mismo sistema que el componente anterior. Es decir hace un llamamiento al servicio de comentarios para sacar todos los comentarios que tengan almacenados un ISBN de libro igual que el del libro actual. Para ello lo que hace es utilizar componentDidMount y CommentDataService.
+
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario17.png)
+ 
+ComentDataService funciona exactamente igual que el servicio de datos para libros que ya vimos en el apartado anterior, solo que esta vez utiliza un http commons que apunta al puerto 8084, que es el puerto por el que se comunica nuestra aplicación y el servicio de comentarios:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario18.png)
+ 
+Tras obtener la lista de comentarios que tengan un ISBN igual al recogido por propiedades se ejecuta el método de renderizado, que es el siguiente:
+
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario19.png)
+ 
+Como podemos ver lo que ocurre es que se almacena un array de comentarios y se mapean para ir devolviendo por cada comentario el estilo general de cada comentario, con sus respectivas etiquetas.
+
+Visualmente la interacción por parte del usuario quedaría de la siguiente manera: A la hora de acceder la sistema vería el listado de este modo:
+
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario20.png)
+ 
+Como podemos ver el método getAll ha recogido todos los libros y por cada uno muestra su imagen y ambos botones. Si pulsamos en VER MÁS podríamos ver el componente de post de libros, el cual simplemente recibe el ISBN del libro en cuestión desde la ruta y a partir de ahí carga sus correspondientes datos:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario21.png)
+ 
+Como podemos ver esta entrada tiene 2 comentarios, ya que en la base de datos existen dos comentarios que tienen un ISBN igual que el de este libro. si por el contrario nos vamos a otro libro:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario22.png)
+ 
+Solo encontraríamos uno. 
