@@ -8,12 +8,15 @@
 
  - INTRODUCCIÓN
  - DESCRIPCIÓN
- - REQUESITOS DEL SISTEMA:
- - REQUESITOS NO FUNCIONALES
- - REQUESITOS FUNCIONALES
- - REQUESITOS DE INFORMACIÓN
+ - REQUISITOS DEL SISTEMA:
+ - REQUISITOS NO FUNCIONALES
+ - REQUISITOS FUNCIONALES
+ - REQUISITOS DE INFORMACIÓN
  - CODIFICACIÓN DE MICROSERVICIO DE USUARIO EN MEMORIA
  - CODIFICACIÓN DE MICROSERVICIO DE USUARIO EN MONGO
+ - CODIFICACIÓN DE MICROSERVICIO DE CHAT WEB E IMPLEMENTACIÓN EN REACT
+ - CODIFICACIÓN + FRONTEND DE MICROSERVICIO DE LIBRO EN MONGO
+ - CODIFICACIÓN + FRONTEND DE MICROSERVICIO DE COMENTARIO EN MONGO
 
 ## INTRODUCCIÓN:
 El Equipo 1 busca ofrecer una plataforma cómoda y segura para promover y facilitar el buen hábito lector de modo que se adapte a nuevos usuarios con ganas de conocer nuevos mundos, historias, relatos, asi como personas con quien compartirlos. Buscamos ofrecer un buen catálogo de entradas comentadas por nuestros usuarios y un acceso a chats en vivo.
@@ -55,7 +58,7 @@ El sistema tiene una serie de requisitos funcionales, no funcionales y de inform
 | Eliminar comentario | RFCO_3 | Se necesita eliminar comentarios que ya se encuentren en el servicio, eliminandolo o estableciendo como inactivo. |
 | Obtener comentarios | RFCO_4 | Se necesita obtener datos de comentarios almacenados en el servicio, recogiendo la información establecida en el  RI_3 en forma de lista de comentarios. |
 
-## REQUESITO DE INFORMACIÓN:
+## REQUISITO DE INFORMACIÓN:
 
 | Requisito | Identificador | Descripción |
 | ------ | ------ | ------ |
@@ -239,12 +242,365 @@ Como siempre procedemos con las pruebas en Postman:
  
  ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/PruebaGetUsuarioMongoTrasModifyPostman.PNG)
  
+ ## CODIFICACIÓN DE MICROSERVICIO DE CHAT WEB E IMPLEMENTACIÓN EN REACT:
  
+Para la implementación del chat hemos establecido un microservicio con Spring que se enlaza directamente con las peticiones realizadas desde REACT mediante JavaScript. El microservicio tiene la siguiente estructura:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/arquitecturaChat.png)
+ 
+  - Config: Directorio que contiene la clase WebSocketConfig, la cual es una clase de configuración de Spring con el siguiente contenido:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat1.png)
+ 
+Lo primero que encontramos es una anotación de configuración, la cual indica a Spring que la clase se debe utilizar como un componente de configuración del sistema. Posteriormente encontramos la anotación @EnableWebSocketMessageBroker, la sirve para indicar que la mensajería mediante nuestro WebSocket se va a habilitar.
+
+Para que funcione esta habilitación deberemos hacer que nuestro archivo de configuración implemente la interfaz WebSockerMessageBrokerConfigurer, el cual nos va a obligar a implementar dos métodos necesarios de configuración:
+ 
+   * registerStompEndpoints, que es el que establece el punto de salida de mensajes a registrar y de atención de peticiones (En nuestro caso nos interesa que se vincule con un punto de salida compatible con JavaScript, por lo que usaremos además el método “withSockJS”). Es importante destacar que la ruta mapeada es “ws”,  ya que la veremos más adelante en REACT para el establecimiento de la conexión y la creación del socket del cliente mediante JavaScript.
+ 
+Documentación de referencia: https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/socket/config/annotation/EnableWebSocketMessageBroker.html
+ 
+   * configureMessageBroker, el cual sirve para configurar los prefijos de localización u origen de las peticiones. Mínimo deberemos habilitar el Broker Simple.
+
+ - Controller: Directorio que contiene la clase ChatController. Esta clase es la que se encarga de recibir las peticiones desde nuestra interfaz en REACT.
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat2.png)
+ 
+Para recibir un mensaje (mediante la anotación @MessageMaping) y devolverlo a un destino concreto (mediante la anotación @SendTo). Actualmente se encuentra preparado para recibir mensajes desde la ruta “message” y devolverlos a la sala de chat general (ésta es precisamente la que nos interesa, porque la idea es que la sala de chat sea general para nuestro libro, no enviando mensajes privados). Además en esta clase se ha establecido un método recMessage privado, para que no llegue la respuesta a todo el chat general sino solo al usuario concreto con el que se mantiene la conversación.
+
+En ambos casos se utiliza la anotación @Payload para la recepción del mensaje, devolviendo un objeto de la clase mensaje que posteriormente se trata en REACT, pero eso lo veremos más adelante.
+
+ - Model: En este directorio se define una clase Message, que define los atributos que debe tener el mensaje:
+  ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat3.PNG)
+ 
+ Y posteriormente se define un ENUM denominado Status, que indica el estado que tendrá cada mensaje en su recepción y envío, con estos valores:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat4.png)
+ 
+Donde JOIN hace referencia a la adhesión de un nuevo cliente al chat, MESSAGE indica que el mensaje se está enviado o devolviendo y LEAVE indica que el cliente ha abandonado el chat.
+
+A continuación vamos a ver cómo se gestiona desde REACT el servicio de CHAT.
+Lo primero que hay que destacar es que para toda la gestión del chat se ha creado un componente denominado chat-component:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat5.png)
+ 
+ En el encontraremos lo siguiente:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat6.png)
+ 
+En primer lugar declaramos un cliente de stomp y lo establecemos en nulo para dale valor al ejecutar el método connect(). Posteriormente veremos que este es el cliente de socket javascript que va a permitir vincularnos con nuestro servicio de chat en Java para hacer peticiones hacia “ws”, que es la ruta mapeada que ya pudimos ver anteriormente en el servicio.
+
+Posteriormente tenemos declaración de constantes para el mapeo, tanto valores concretos como los datos de estado del usuario, los cuales son rellenados mediante el método useEffect, que es un método similar en funcionamiento a componentDidMount de REACT (Función que se ejecuta a la hora de cargar el componente) pero orientado a ser usado en componentes de tipo función, las cuales no permiten el uso de componentDidMount.
+
+Método connect. Como hemos comentado brevemente con anterioridad, este método es el que se encarga de declarar un socket y darle el valor devuelto por el servicio, creando el socket del cliente y estableciendo el valor a nuestro cliente de Socket Stomp de  javascript. Como podemos ver la conexión recibe 3 valores:
+Valores extras de la conexión. como no queremos indicar ninguno estableceremos las llaves simples.
+Método a ejecutar en caso de éxito en la conexión. En nuestro caso ese método será onConnected.
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat7.png)
+ 
+Si nos fijamos se encarga de darle valor a UserData y establece la conexión en TRUE, permitiéndonos acceder al chat concreto. Para el acceso se ofrecen dos vertientes, la publica (que es la que nos interesa) y la privada (para hablar con usuarios concretos), manejadas ambas con el método suscribe.
+Método a ejecutar en caso de error en la conexión. En nuestro caso será el método onError.
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat8.png)
+
+Los siguientes método a destacar son estos dos:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat9.png)
+
+userJoin: Como podemos deducir éste método se encarga de enviar al servicio un mensaje de petición de acceso al sistema de chat, de modo que envía tanto los datos del usuario que se encuentra conectado como el estados correspondiente del ENUM que ya comentamos en su momento, en este caso con el valor JOIN.
+
+onMessageReceived: Método que se encarga de recibir y manejar los mensajes enviados al char público, pero para ello lo que hace es recibir los datos de la anotación Payload que ya vimos en el servicio. Esta nos interesa porque identifica el estado del mensaje (Los estado recordemos que se definen en el ENUM del servicio). Si el estado es JOIN quiere decir que el usuario se está uniendo al chat, por lo que enviaremos al servicio los datos del usuario. Si por el contrario el estado es MESSAGE querremos decir que el usuario ya se encuentra unido, por lo que lo que se manejan serán los mensajes escritos. Existe un método exactamente igual para la gestión de mensajes privados, que se denomina onPrivateMessgae, pero el funcionamiento es igual solo que no orientado a enviar mensajes al chat general, por lo que no merece mayor explicación dado que no se le ha dado uso actualmente.
+
+Los siguientes dos métodos se encargan de manejar los mensajes y de enviar los valores de estos:
+
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat10.png)
+ 
+handleMessage: Es un método que recibe el valor del elemento destacado, que es precisamente el input de escritura y mensajes que se encuentran en el chat. Este método se ejecuta cada vez que cambia el valor del campo, de modo que se mantenga siempre actualizado.
+sendValue: Cuando ya queramos enviar el mensaje al servicio comprobaremos que el socket del cliente existe y en caso afirmativo enviaremos el mensaje con los datos del usuario y el estado correspondiente.
+
+Con esto ya tendríamos el chat de modo funcional. Simplemente a la hora de ejecutar el método return de nuestro componente función de REACT para mostrar datos por pantalla deberemos comprobar si el usuario está conectado:
+
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat11.png)
+ 
+En caso afirmativo mostraremos la sala de chat con su cajas de texto y su botón de enviar mensajes y listado de usuarios conectados a la sala. En caso negativo se mostrará un pseudocomponente que se encargue de manejar la conexión del usuario para permitirle el acceso al chat:
+
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat12.png)
+
+Si nos fijamos concretamente lo que maneja este método registrerUser, el cual ejecutará directamente el método connect que ya explicamos anteriormente.
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat13.png)
+
+A continuación vamos a hacer una pequeña muestra visual de ejecución. Lo primero que tendremos al acceder al programa es un catálogo de libros, el cual se obtiene mediante el microservicio de libros y el componente book-list.component. Una vez dentro pulsaremos sobre el botón del chat:
+
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat14.png)
+
+Nos pedirá introducir nuestro usuario para acceder al chat.
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat15.png)
+ 
+Con ello accederemos al chat y aparecerá nuestro nombre de usuario:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat16.png)
+ 
+Ahora haremos lo mismo con otro usuario a que llamaremos “Pepesito” y enviará un mensaje a nuestro usuario principal:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat17.png)
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/chat18.png)
+ 
+ 
+ ## CODIFICACIÓN + FRONTEND DE MICROSERVICIO DE LIBRO EN MONGO
+ 
+ Para la creación del microservicio de libros para la persistencia de sus datos en MongoDB se ha establecido la siguiente arquitectura:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/arquitecturaLibros.png)
+ 
+ Y una vinculación directa con el puerto 8085, establecida directamente en el documento application.properties.
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros1.png)
+ 
+A continuación vamos a ir viendo paso a paso cada elemento del microservicio. En primer lugar vamos a empezar con el controlador, el cual se compone de la clase LibroController y la interfaz que implementa: LibroAPI.
+
+La interfaz se compone de las siguientes declaraciones:
+
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros2.png)
+ 
+Como podemos comprobar es un CRUD simple para la persistencia de datos. Estos métodos deberán ser implementados por el controlador:
+
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros3.png)
+ 
+Al igual que ocurría con el microservicio de libros contamos con la anotación @RestController para indicar que estamos creando un componente controlador para una API REST. Como en el controlador tenemos que recibir las peticiones del cliente las deberemos mapear con una dirección, que en este caso es “libros”. Una vez establecido el controlador se implementan los métodos CRUD de la interfaz comentado anteriormente y se ejecutan sus funciones del mismo modo que comentamos anteriormente con el microservicio de usuarios, destacando que en este caso tanto para modificar, eliminar y para obtener un libro concreto se recibe por parámetros el identificador de éste.
+
+Para la ejecución de los métodos del servicio utilizamos la anotación @Autowired haciendo referencia a LibroService, servicio que implemente las acciones directas con la base de datos de MongoBD mediante métodos del repositorio.
+
+Ahora vamos a proceder a hablar del modelo, el cual se compone de las clases VO y DTO del propio modelo de libros:
 
  
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros4.png)
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros5.png)
  
+Como podemos ver ambos se componen de los mismos datos, solo que para el devenir de la aplicación solo se hará uso de VO para la persistencia en Mongo, mientras que para todo el trabajo y recepción de estos se utilizaran DTOs. Para ambos casos se han utilizado anotaciones de Lombok que ya explicamos en su momento cuando hablábamos del micro servicio de usuarios, las cuales reducen mucho el código a escribir.
+
+Con respecto a la interfaz LibroRepository es una interfaz que simplemente extiende del repositorio de Mongo y que utilizaremos para poder aplicar los métodos de esta.
+
  
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros6.png)
  
+Entrando a hablar de la clase de utilizar de este microservicio tenemos un conversor que se encarga de convertir objetos DTO en VO y viceversa. En su momento ya fue explicado uno muy similar par ale microservicio de usuarios:
+
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros7.png)
+ 
+Finalmente toca hablar del servicio. Este se compone de dos apartados: La implementación y la interfaz. La interfaz se denomina LibroService y se encarga de declarar los métodos a implementar:
+
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros8.png)
+ 
+ Pero en la implementación es donde ya sí que encontramos más que comentar. Empezaremos con el primer método:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros9.png)
+ 
+Como podemos ver, al igual que ocurría con el microservicio de usuarios tenemos un método para obtener todos los libros almacenados en la base de datos. Para ello se declara una lista de objetos DTO a devolver, otra de VO donde almacenar los datos obtenidos y en caso de que existan se convertirá en DTO para recogerse y enviarse al usuario. En ambos casos media un ResponseEntity para obtener no oslo el dato sino el estado de la respuesta, ya sea afirmativa o negativa. 
+
+Ahora vamos a proceder con el método create:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros10.png)
+ 
+Como podemos ver en un método que se encarga de recibir un DTO, lo convierte en VO gracias a nuestro conversor y lo inserta en la base de datos. Si todo ha ido bien devolverá un ResponseEntity con estado OK y en caso opuesto con un estado negativo.
+
+Para la obtención de un libro concreto a partir de us ISBN tenemos el método get:
+
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros11.png)
+ 
+Como podemos ver para su funcionamiento simplemente se recibe el ISBN del libro y se busca mediante el método del repositorio findByID. En ambos casos se devuelve un Optional y, si está presente querrá decir que se ha encontrado el elemento, por lo que devolveremos el ResponseEntity correspondiente en base a dicha respuesta.
+
+Para la modificación de libros tenemos el método modify:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros12.png)
+ 
+Del mismo modo que en el microservicio de usuarios este método recibe el identificador y el nuevo elemento. Si existe ya un elemento con dicho identificador es que puede ser modificado, por lo que procedemos a convertir el DTO recibido en VO y lo almacenamos con el método del repositorio SAVE utilizando el mismo ID, de modo que no se repita el elemento en el repositorio  se apliquen nuevos datos.
+
+Finalmente tenemos el método de eliminación de libros, el método save:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros13.png)
+ 
+Al igual que ocurría en el caso del microservicio de usuarios el método recibe el identificador del elemento a borrar y en caso de que exista, mediante el miedo findById, se eliminará de la base de datos y se enviará un ResponseEntity acorde a la situación dada.
+
+Ahora que hemos comprobado el funcionamiento del microservicio vamos a ver su actuación sobre el FRONTEND:
+
+Lo primero que tenemos que saber es que para mostrar los libros hemos creado un componente en REACT denominado books-list-component, el cual mostrará cada libro almacenado en la base de datos. cada uno de esos libros obtienen su formato gracias a un componente hijo de books-list-component, el componente book-component:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros14.png)
+ 
+Empezando con el componente padre lo primero que tenemos que ver es que nada más iniciarse se ejecuta el método componentDidMount, el cual ejecuta un método retrieveBooks para obtener los libros de la base de datos:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros15.png)
+ 
+Como podemos ver el método retrieve lo que hace es ejecutar el método getAll de BookDataService, que es un componente de enlace para apis rest que podemos ver aqui:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros16.png)
+ 
+Básicamente parte de la configuración web del componente http-common-book para declarar la ejecución de peticiones http de tipo get, post, delete y put. Gracias a este servicio conseguimos ejecutar llamamientos directos a nuestro microservicio. Para que funcione obviamente necesitamos tener configurado correctamente el componente http-common-book, el cual tiene el siguiente contenido:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros17.png)
+ 
+Como podemos ver implementamos una librería axios, la cual nos ofrece métodos http para llamamientos a servicios API REST. Requiere una URL de base con el puerto que se mantengan a la escucha, en este caso el 8085.
+
+Volviendo con nuestro FRONT de listado de libros, una vez que se cargan los libros y se almacenan en el estado books de nuestro componente (gestionado mediante promesas en REACT):
+
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros18.png)
+
+Posteriormente encontramos nuestro renderizador:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros19.png)
+
+Como podemos ver partimos de especificar que vamos a hacer uso del estado books. En el return mapeamos cada uno de los libros de modo que consigamos un loop funcional y por cada elemento mostraremos un componente Book, al que pasamos como parámetros el ISBN y la IMAGEN.
+
+El componente Book por su parte tiene la siguiente estructura:
+
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros20.png)
+ 
+Como podemos ver es mucho más simplificada. Simplemente recibimos la imagen desde el elemento padre a partir de sus props y establecemos una serie de divs para la imágen y presentación, así como los botones de CHAT y de VER MÁS. El de chat nos llevará directamente a la pantalla de inserción de usuario y el de VER MÁS nos llevará a la entrada concreta del libro en cuestión a partir de su ISBN, donde podremos ver los comentarios concretos y que existen sobre ese libro así como una breve descripción sobre este y sus datos específicos.
+
+Visualmente la interacción por parte dle usuario quedaría de la siguiente manera: A la hora de acceder la sistema vería el listado de este modo:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros21.png)
+ 
+Como podemos ver el método getAll ha recogido todos los libros y por cada uno muestra su imagen y ambos botones. Si pulsamos en VER MÁS podríamos ver el componente de post de libros, el cual simplemente recibe el ISBN del libro en cuestión desde la ruta y a partir de ahí carga sus correspondientes datos:
+
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/libros22.png)
+ 
+Como podemos ver en la zona inferior encontramos los comentarios, pero los explicaremos en el siguiente apartado más detenidamente.
+ 
+## CODIFICACIÓN + FRONTEND DE MICROSERVICIO DE COMENTARIO EN MONGO
+ 
+Para la creación del microservicio de comentarios para la persistencia de sus datos en MongoDB se ha establecido la siguiente arquitectura:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/arquitecturaComentarios.png)
+ 
+Y una vinculación directa con el puerto 8084, establecida directamente en el documento application.properties.
+
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario1.png)
+ 
+A continuación vamos a ir viendo paso a paso cada elemento del microservicio. En primer lugar vamos a empezar con el controlador, el cual se compone de la clase ComentarioController y la interfaz que implementa: ComentarioAPI.
+
+La interfaz se compone de las siguientes declaraciones:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario2.png)
+ 
+Como podemos comprobar es un CRUD simple para la persistencia de datos. Estos métodos deberán ser implementados por el controlador:
+
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario3.png)
+ 
+Al igual que ocurría con el microservicio de libros contamos con la anotación @RestController para indicar que estamos creando un componente controlador para una API REST. Como en el controlador tenemos que recibir las peticiones del cliente las deberemos mapear con una dirección, que en este caso es “comentario”. Una vez establecido el controlador se implementan los métodos CRUD de la interfaz comentado anteriormente y se ejecutan sus funciones del mismo modo que comentamos anteriormente con el microservicio de usuarios o de libros, destacando que en este caso tanto para modificar, eliminar y para obtener un libro concreto se recibe por parámetros el identificador de éste.
+
+Para la ejecución de los métodos del servicio utilizamos la anotación @Autowired haciendo referencia a ComentarioService, servicio que implemente las acciones directas con la base de datos de MongoBD mediante métodos del repositorio.
+
+Ahora vamos a proceder a hablar del modelo, el cual se compone de las clases VO y DTO del propio modelo de libros:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario4.png)
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario5.png)
+
+Como podemos ver ambos se componen de los mismos datos, solo que para el devenir de la aplicación solo se hará uso de VO para la persistencia en Mongo, mientras que para todo el trabajo y recepción de estos se utilizaran DTOs. Para ambos casos se han utilizado anotaciones de Lombok que ya explicamos en su momento cuando hablábamos del micro servicio de usuarios o de libros, las cuales reducen mucho el código a escribir.
+
+Con respecto a la interfaz ComentarioRepository es una interfaz que simplemente extiende del repositorio de Mongo y que utilizaremos para poder aplicar los métodos de esta.
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario6.png)
+
+Entrando a hablar de la clase de utilizar de este microservicio tenemos un conversor que se encarga de convertir objetos DTO en VO y viceversa. En su momento ya fue explicado uno muy similar par ale microservicio de usuarios:
+
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario7.png)
+ 
+Finalmente toca hablar del servicio. Este se compone de dos apartados: La implementación y la interfaz. La interfaz se denomina ComentarioService y se encarga de declarar los métodos a implementar:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario8.png)
+ 
+Pero en la implementación es donde ya sí que encontramos más que comentar. Empezaremos con el primer método:
+
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario9.png)
+ 
+Como podemos ver, al igual que ocurría con el microservicio de usuarios tenemos un método para obtener todos los libros almacenados en la base de datos. Para ello se declara una lista de objetos DTO a devolver, otra de VO donde almacenar los datos obtenidos y en caso de que existan se convertirá en DTO para recogerse y enviarse al usuario. En ambos casos media un ResponseEntity para obtener no solo el dato sino el estado de la respuesta, ya sea afirmativa o negativa. 
+
+Ahora vamos a proceder con el método create:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario10.png)
+ 
+Como podemos ver en un método que se encarga de recibir un DTO, lo convierte en VO gracias a nuestro conversor y lo inserta en la base de datos. Si todo ha ido bien devolverá un ResponseEntity con estado OK y en caso opuesto con un estado negativo.
+
+Para la obtención de un comentario concreto a partir de su id tenemos el método get:
+
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario11.png)
+ 
+Como podemos ver para su funcionamiento simplemente se recibe el id del comentario en cuestión y se busca mediante el método del repositorio findByID. En ambos casos se devuelve un Optional y, si está presente querrá decir que se ha encontrado el elemento, por lo que devolveremos el ResponseEntity correspondiente en base a dicha respuesta.
+
+Para la modificación de libros tenemos el método modify:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario12.png)
+ 
+Del mismo modo que en el microservicio de usuarios este método recibe el identificador y el nuevo elemento. Si existe ya un elemento con dicho identificador es que puede ser modificado, por lo que procedemos a convertir el DTO recibido en VO y lo almacenamos con el método del repositorio SAVE utilizando el mismo ID, de modo que no se repita el elemento en el repositorio  se apliquen nuevos datos.
+
+Finalmente tenemos el método de eliminación de comentarios, el método delete:
+
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario13.png)
+ 
+Al igual que ocurría en el caso del microservicio de usuarios el método recibe el identificador del elemento a borrar y en caso de que exista, mediante el miedo findById, se eliminará de la base de datos y se enviará un ResponseEntity acorde a la situación dada.
+
+Ahora que hemos comprobado el funcionamiento del microservicio vamos a ver su actuación sobre el FRONTEND:
+
+Lo primero que tenemos que saber es que para mostrar los comentarios hemos creado un componente en REACT denominado commentlist-component, el cual mostrará cada comentario almacenado en la base de datos siempre que coincida con el libro que se está visionando en ese momento. esto se debe a que los comentarios solo son visibles dentro de la entrada o post de cada libro. Algo que podemos sacar en claro con esto es que el componente de muestreo de comentarios no deja realmente de ser un componente hijo del componente que muestra la entrada individual de cada libro, es decir el componente individual.post.book.component.
+
+Empezando con el componente padre lo primero que tenemos que ver es que nada más iniciarse se ejecuta el método useEffect, el cual ejecuta un método retrieveBook para obtener el libro de la base de datos que coincida con el ISBN que obtiene por el PATH de la página:
+
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario14.png)
+ 
+Para ello utiliza una promesa de REACT que, al recibir respuesta, obtiene los datos que deseamos y los setea en el estado del componente. Como en este caso es un componente de tipo función, su estado se define mediante constraints:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario15.png)
+ 
+Como podemos ver el método retrieve lo que realmente ejecuta para obtener los datos del libro en cuestión es el método get de BookDataService, que es un componente de enlace para apis rest que ya explicamos anteriormente cuando desarrollamos la codificación del microservicio de libros.
 
 
+Básicamente parte de la configuración web del componente http-common-book para declarar la ejecución de peticiones http de tipo get, post, delete y put. Gracias a este servicio conseguimos ejecutar llamamientos directos a nuestro microservicio. Para que funcione obviamente necesitamos tener configurado correctamente el componente http-common-book y posteriormente encontraremos nuestro return:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario16.png)
+ 
+En esencia muestra una serie de etiquetas para dar formato a la página y haciendo uso de los datos obtenidos y almacenados en los constraints.
 
+Si nos fijamos en la zona remarcada, al final del post o entrada se hace el llamamiento al componente de listado de comentarios, que es el que vamos a analizar y al cual se le pasa como propiedad el ISBN del libro.
+
+El componente de listado de comentarios, al recibir el ISBN del libro ejecuta el mismo sistema que el componente anterior. Es decir hace un llamamiento al servicio de comentarios para sacar todos los comentarios que tengan almacenados un ISBN de libro igual que el del libro actual. Para ello lo que hace es utilizar componentDidMount y CommentDataService.
+
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario17.png)
+ 
+ComentDataService funciona exactamente igual que el servicio de datos para libros que ya vimos en el apartado anterior, solo que esta vez utiliza un http commons que apunta al puerto 8084, que es el puerto por el que se comunica nuestra aplicación y el servicio de comentarios:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario18.png)
+ 
+Tras obtener la lista de comentarios que tengan un ISBN igual al recogido por propiedades se ejecuta el método de renderizado, que es el siguiente:
+
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario19.png)
+ 
+Como podemos ver lo que ocurre es que se almacena un array de comentarios y se mapean para ir devolviendo por cada comentario el estilo general de cada comentario, con sus respectivas etiquetas.
+
+Visualmente la interacción por parte del usuario quedaría de la siguiente manera: A la hora de acceder la sistema vería el listado de este modo:
+
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario20.png)
+ 
+Como podemos ver el método getAll ha recogido todos los libros y por cada uno muestra su imagen y ambos botones. Si pulsamos en VER MÁS podríamos ver el componente de post de libros, el cual simplemente recibe el ISBN del libro en cuestión desde la ruta y a partir de ahí carga sus correspondientes datos:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario21.png)
+ 
+Como podemos ver esta entrada tiene 2 comentarios, ya que en la base de datos existen dos comentarios que tienen un ISBN igual que el de este libro. si por el contrario nos vamos a otro libro:
+ 
+![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario22.png)
+ 
+Solo encontraríamos uno. 
