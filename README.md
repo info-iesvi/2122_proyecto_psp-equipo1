@@ -636,35 +636,45 @@ Solo encontraríamos uno.
  Ahora vamos con el Front. En react he creado un botón en la pantalla dónde se ve la listas de libros disponibles. Dicho botón amarillo tiene como texto "¿No está el libro que buscas? y te enviará a una nueva pestaña para indicar la sugerencia:
  
  Interfaz:
+ 
  ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/InterfazRequest1.png)
  
  Código:
+ 
  ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/ListaLibrosBotonRequest.png)
  
  Ruta a la nueva pestaña:
+ 
  ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/ClaseAppReactRequest.png)
  
- Clase servicio que indica la url y método http a la cuál enviar l asugerencia:
+ Clase servicio que indica la url y método http a la cuál enviar la sugerencia:
+ 
  ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/ServicioLibroReact.png)
  
  La nueva pestaña será un componente nuevo en react. Dentro del componente estarán renderizados un texto motivando al usuario que indice información acerca del libro, dos cajas de texto dónde introducir su correo electrónico y la propia sugerencia, y por últmi un botón para enviar la sugerencia.
  
  Interfaz:
+ 
  ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/InterfazRequest2.png)
  
  Código con los métodos dónde se ve cómo se guarda el email, mensaje y se manda a través de http la sugerencia:
+ 
  ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/ComponenteRequest1.png)
  
  Código html que renderiza los elementos de la página:
+ 
  ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/ComponenteRequest2.png)
  
  Si no se indica un correo o sugerencia y se pulsa el botón "Enviar", la página indica al usuario que éste lo haga y no se envía nada:
+ 
  ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/InterfazRequest3.png)
  
  Y si se envía una sugerencia correctamente, la página lo indica así:
+ 
  ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/InterfazRequest4.png)
  
  Ejemplo de mensaje que envía la aplicación al correo indicado en la sugerencia:
+ 
  ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/InterfazRequest5.png)
  
  
