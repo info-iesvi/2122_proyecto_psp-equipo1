@@ -17,6 +17,7 @@
  - CODIFICACIÓN DE MICROSERVICIO DE CHAT WEB E IMPLEMENTACIÓN EN REACT
  - CODIFICACIÓN + FRONTEND DE MICROSERVICIO DE LIBRO EN MONGO
  - CODIFICACIÓN + FRONTEND DE MICROSERVICIO DE COMENTARIO EN MONGO
+ - CODIFICACIÓN + FRONTEND DE CLIENTES ESTÁNDAR CORREOS
 
 ## INTRODUCCIÓN:
 El Equipo 1 busca ofrecer una plataforma cómoda y segura para promover y facilitar el buen hábito lector de modo que se adapte a nuevos usuarios con ganas de conocer nuevos mundos, historias, relatos, asi como personas con quien compartirlos. Buscamos ofrecer un buen catálogo de entradas comentadas por nuestros usuarios y un acceso a chats en vivo.
@@ -604,3 +605,73 @@ Como podemos ver esta entrada tiene 2 comentarios, ya que en la base de datos ex
 ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/comentario22.png)
  
 Solo encontraríamos uno. 
+ 
+## CODIFICACIÓN + FRONTEND DE CLIENTES ESTÁNDAR CORREOS
+
+ Para implementar un cliente estándar de correo, hemos pensado añadir un botón en el partado de libros, el cuál, lo susuarios podrán sugerir libros que no estén en nuestro blog. En dicha sugerencia indicará además su correo electrónico para enviarle un correo indicando que hemos recibido su sugerencia y que estamos trabajando en ella. 
+ 
+ Por ello, he utilizado el microservicios de libro para crear un método que reciba la sugerencia y envíe un correo al usuario. 
+ Primero he creado una clase "Request" en el paquete "model" del microservicio de libros. La clase "Request" está compuesta por dos Strings, uno de ellos dónde guarda el email del destinatario a mandar el mensaje y otro con el propio mensaje.
+ 
+  ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/CarpetaModelRequest.png)
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/ClaseRequest.png)
+ 
+ Despúes, en el controlador del microservicio, he declarado el método el cuál se encarga de recoger la sugerecia a través de http.
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/MetodoInterfazAPILibro.png)
+ 
+ Método en el propio controlador, que recibe una petición http POST a la url "/libros/request" y llama al método del servicio que se encarga de enviar el correo:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/M%C3%A9todoRequestControlador.png)
+ 
+ Una vez que el controlador recoge la petición, declaro el método en el servicio: 
+ 
+  ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/MetodoLibroServiceRequest.png)
+ 
+ Ahora sí, aquí tenemos el método que envía el correo. Este método utiliza el código de un ejercicio hecho en clase dónde se usa GMAIL. En concreto,hemos creado una cuenta de gmail "readmepsp@gmail.com" que será el encargado de enviar los correos. Mientras, el mensaje y destinatario son indicados en el objeto "Request" que recibe cómo parámetro el método. Tambíen se define siempre el mismo mensaje predefinido, con asunto "Sugerencia Readme":
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/M%C3%A9todoSendRequest1.png)
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/M%C3%A9todoRequest2.png)
+ 
+ Ahora vamos con el Front. En react he creado un botón en la pantalla dónde se ve la listas de libros disponibles. Dicho botón amarillo tiene como texto "¿No está el libro que buscas? y te enviará a una nueva pestaña para indicar la sugerencia:
+ 
+ Interfaz:
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/InterfazRequest1.png)
+ 
+ Código:
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/ListaLibrosBotonRequest.png)
+ 
+ Ruta a la nueva pestaña:
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/ClaseAppReactRequest.png)
+ 
+ Clase servicio que indica la url y método http a la cuál enviar l asugerencia:
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/ServicioLibroReact.png)
+ 
+ La nueva pestaña será un componente nuevo en react. Dentro del componente estarán renderizados un texto motivando al usuario que indice información acerca del libro, dos cajas de texto dónde introducir su correo electrónico y la propia sugerencia, y por últmi un botón para enviar la sugerencia.
+ 
+ Interfaz:
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/InterfazRequest2.png)
+ 
+ Código con los métodos dónde se ve cómo se guarda el email, mensaje y se manda a través de http la sugerencia:
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/ComponenteRequest1.png)
+ 
+ Código html que renderiza los elementos de la página:
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/ComponenteRequest2.png)
+ 
+ Si no se indica un correo o sugerencia y se pulsa el botón "Enviar", la página indica al usuario que éste lo haga y no se envía nada:
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/InterfazRequest3.png)
+ 
+ Y si se envía una sugerencia correctamente, la página lo indica así:
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/InterfazRequest4.png)
+ 
+ Ejemplo de mensaje que envía la aplicación al correo indicado en la sugerencia:
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/InterfazRequest5.png)
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
