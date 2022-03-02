@@ -2,6 +2,7 @@ package equipo1.libros.controller.impl;
 
 import equipo1.libros.controller.LibroAPI;
 import equipo1.libros.model.LibroDTO;
+import equipo1.libros.model.Request;
 import equipo1.libros.service.LibroService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -42,5 +43,12 @@ public class LibroController implements LibroAPI {
     @DeleteMapping("/{isbn}")
     public ResponseEntity<String> delete(@PathVariable String isbn) {
         return libroService.delete(isbn);
+    }
+
+    @Override
+    @PostMapping("/request")
+    public ResponseEntity senRequest(@RequestBody Request request) {
+        libroService.SendRequest(request);
+        return ResponseEntity.ok().build();
     }
 }

@@ -1,6 +1,7 @@
 package equipo1.libros.service;
 
 import equipo1.libros.model.LibroDTO;
+import equipo1.libros.model.Request;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -11,4 +12,5 @@ public interface LibroService {
     ResponseEntity<LibroDTO> get(String isbn);
     ResponseEntity<LibroDTO> modify(String isbn, LibroDTO librodto);
     ResponseEntity<String> delete(String isbn);
+    void SendRequest(Request request);
 }
