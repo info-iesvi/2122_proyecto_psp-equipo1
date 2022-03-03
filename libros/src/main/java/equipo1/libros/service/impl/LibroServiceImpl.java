@@ -2,14 +2,28 @@ package equipo1.libros.service.impl;
 
 import equipo1.libros.model.LibroDTO;
 import equipo1.libros.model.LibroVO;
+import equipo1.libros.model.Request;
 import equipo1.libros.repository.LibroRepository;
 import equipo1.libros.service.LibroService;
 import equipo1.libros.util.ConversorLibro;
+import org.apache.commons.net.smtp.AuthenticatingSMTPClient;
+import org.apache.commons.net.smtp.SimpleSMTPHeader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
+import java.io.IOException;
+import java.io.Writer;
+import java.net.SocketException;
+import java.security.InvalidKeyException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -112,6 +126,81 @@ public class LibroServiceImpl implements LibroService {
             return new ResponseEntity<String>("Libro eliminado",HttpStatus.OK);
         }else{
             return new ResponseEntity<String>("Libro no encontrado",HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @Override
+    public void SendRequest(Request request) {
+        AuthenticatingSMTPClient clienteAutentificado = new AuthenticatingSMTPClient();
+        //Establecemos los datos de usuario
+        String servidor = "smtp.gmail.com";
+        String usuario = "readmepsp@gmail.com";
+        String clave = "readme1234";
+        int puerto = 587;  //Puerto que se utiliza para TSL/STARTTSL
+        String remitente = "miguelvidaldeblanca@gmail.com";
+        try{
+            int respuesta;
+            //Intentamos crear una KEY, esta es necesaria para estabelcer un canal seguro
+            KeyManagerFactory fabricaKey = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+            fabricaKey.init(null,null);
+            KeyManager manejador = fabricaKey.getKeyManagers()[0];
+            //Nos conectamos al servidor SMTP
+            clienteAutentificado.connect(servidor,puerto);
+            System.out.println("1 - "+clienteAutentificado.getReplyString());
+            //Enviamos el comando EHLO. Esto e scompletamente necesario!!!!
+            clienteAutentificado.ehlo(servidor);
+            System.out.println("2 - "+clienteAutentificado.getReplyString());
+
+            // MODO NO IMPLICITO - NECESITA NEGOCIAR TLS
+            //Esto se hace ejecutando el comando execTLS y comprobando si es true
+            if(clienteAutentificado.execTLS()){
+                System.out.println("3 - "+clienteAutentificado.getReplyString());
+                //Nos autentificamos ante el servdiro
+                if(clienteAutentificado.auth(AuthenticatingSMTPClient.AUTH_METHOD.PLAIN, usuario,clave)){
+                    System.out.println("4 - "+clienteAutentificado.getReplyString());
+                    String destinatario1 = request.getEmail();
+                    String asunto = "Sugerencia Readmine";
+
+                    //Creamos nuestra cabecera
+                    SimpleSMTPHeader cabeceraSimple = new SimpleSMTPHeader(remitente,destinatario1,asunto);
+                    clienteAutentificado.setSender(usuario);
+                    clienteAutentificado.addRecipient(destinatario1);
+                    System.out.println("5 - "+clienteAutentificado.getReplyString());
+                    //Creamos neustro Writer para datas y lo enviamos:
+                    Writer writer = clienteAutentificado.sendMessageData();
+                    if(writer==null){
+                        System.out.println("Fallo al enviar DATA");
+                        System.exit(1);
+                    }
+                    writer.write(cabeceraSimple.toString());
+                    String mensaje = "Buenas, hemos recibido tu siguiente sugerencia: "+request.getMessage()+"\nMuchas gracias por apoyar nuestro blog, estamos trabajando para que ese libro llegue al blog.";
+                    writer.write(mensaje);
+                    writer.close();
+                    System.out.println("6 - "+clienteAutentificado.getReplyString());
+                    boolean exito = clienteAutentificado.completePendingCommand();
+                    System.out.println("7 - "+clienteAutentificado.getReplyString());
+                    if(!exito){
+                        System.out.println("No se ha podido completar la transacción.");
+                        System.exit(1);
+                    }else{
+                        System.out.println("Mensaje enviado con éxito.");
+                    }
+                }
+            }
+        } catch (SocketException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (UnrecoverableKeyException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
+        } catch (InvalidKeySpecException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
         }
     }
 }
