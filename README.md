@@ -735,6 +735,12 @@ Solo encontraríamos uno.
  
  ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/AppArrancada.png)
  
+ En caso de que no tengas usuarios, ni libros cargados en tu contenedor mongo, aquí tienes unos de ejemplo:
+ 
+ Libros: https://docs.google.com/document/d/1qeiVi6fnuDaqdNc1LGnU81CaVoDTiAkjfcEcu8erS8U/edit?usp=sharing
+ 
+ Usuarios: https://docs.google.com/document/d/1_YWWezQkri_7C5CLVk83uIFle_TJ5ETZ8CVsZslo5iU/edit?usp=sharing
+ 
  
  
  
