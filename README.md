@@ -18,6 +18,7 @@
  - CODIFICACIÓN + FRONTEND DE MICROSERVICIO DE LIBRO EN MONGO
  - CODIFICACIÓN + FRONTEND DE MICROSERVICIO DE COMENTARIO EN MONGO
  - CODIFICACIÓN + FRONTEND DE CLIENTES ESTÁNDAR CORREOS
+ - CODIFICACIÓN + FRONTEND IMPLEMENTACIÓN DE HILOS
 
 ## INTRODUCCIÓN:
 El Equipo 1 busca ofrecer una plataforma cómoda y segura para promover y facilitar el buen hábito lector de modo que se adapte a nuevos usuarios con ganas de conocer nuevos mundos, historias, relatos, asi como personas con quien compartirlos. Buscamos ofrecer un buen catálogo de entradas comentadas por nuestros usuarios y un acceso a chats en vivo.
@@ -669,13 +670,36 @@ Solo encontraríamos uno.
  
  ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/InterfazRequest3.png)
  
- Y si se envía una sugerencia correctamente, la página lo indica así:
+ Y si se envía una sugerencia correctamente, la página lo indica así
  
  ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/InterfazRequest4.png)
+ 
+ A los cinco segundos de enviarse la petición, la aplicación te redirigirá a la página de inicio y esto gracias al método setTimeout, que te redirigirá a la página indicada en el método "window.location.href" en el tiempo indicado, que en nuestro caso hemos puesto 5000 milisegundos.
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/fronthilos.png)
  
  Ejemplo de mensaje que envía la aplicación al correo indicado en la sugerencia:
  
  ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/InterfazRequest5.png)
+ 
+ ## CODIFICACIÓN + FRONTEND IMPLEMENTACIÓN DE HILOS
+ Para el uso de hilos, lo hemos implementado en la funcionalidad de correos. Para cada correo/ peticiín que hagan los usuarios se creará un hilo para ocupearse de la recepción de la sugerencia y envío de correo a la persona correspondiente.
+ 
+ Para ello hemos modificado el microservicio de libros, concretamente la clase servicio "LibroServiceImpl.java". Dentro, hemos creado una subclase llamada "HiloRequest" que extiende de "Thread". Para dicha subclase hemos generado un constructor el cual pide la sugerencia que se recibe desde el propio método "SendRequest", explicado en el anterior punto. 
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/CLASE%20HILO.png)
+ 
+ Pues como extiende de hilo, hemos implementado el método "run" el cuál contiene todo el bloque de código encargado de recibir la sugerencia, procesarla y enviar el correo a la persona correspondiente.
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/METODORUN.png)
+ 
+ Por lo tanto, el método "SendRequest" de la clase "LibroServiceImpl.java", se quedaría así:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/METODOSENDREQUEST.png)
+ 
+ 
+ 
+
  
  
  
