@@ -12,5 +12,5 @@ public interface LibroService {
     ResponseEntity<LibroDTO> get(String isbn);
     ResponseEntity<LibroDTO> modify(String isbn, LibroDTO librodto);
     ResponseEntity<String> delete(String isbn);
-    void SendRequest(Request request);
+    boolean SendRequest(Request request);
 }
