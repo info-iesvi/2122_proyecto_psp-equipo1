@@ -19,6 +19,7 @@
  - CODIFICACIÓN + FRONTEND DE MICROSERVICIO DE COMENTARIO EN MONGO
  - CODIFICACIÓN + FRONTEND DE CLIENTES ESTÁNDAR CORREOS
  - CODIFICACIÓN + FRONTEND IMPLEMENTACIÓN DE HILOS
+ - MINI TUTORIAL ¿CÓMO ARRANCAR PROYECTO?
 
 ## INTRODUCCIÓN:
 El Equipo 1 busca ofrecer una plataforma cómoda y segura para promover y facilitar el buen hábito lector de modo que se adapte a nuevos usuarios con ganas de conocer nuevos mundos, historias, relatos, asi como personas con quien compartirlos. Buscamos ofrecer un buen catálogo de entradas comentadas por nuestros usuarios y un acceso a chats en vivo.
@@ -696,6 +697,44 @@ Solo encontraríamos uno.
  Por lo tanto, el método "SendRequest" de la clase "LibroServiceImpl.java", se quedaría así:
  
  ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/METODOSENDREQUEST.png)
+ 
+ ## MINI TUTORIAL ¿CÓMO ARRANCAR PROYECTO?
+ Para arrancar el proyecto, primero necesitaremos arrancar un contenedor de docker con una imagen base de "bitnami/mongodb". En caso de no tener ningún contenedor con esta imagen antes puedes arrancar uno desde cero con el comando "docker run -d bitnami/mongodb" .
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/ArrancarContenedorMongo.png)
+ 
+ Una vez arrancado el contenedor mongodb, arrancaremos loas cuatro microservicios que componen el "Back" de la aplicación. Para arrancar los microservicios, podemos abrirlos  en IntelliJ y pulsar sobre el botón play de color verde situado arriba a la derecha.
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/MicroservicioSinArrancar.png)
+ 
+ Microservicio usuarios:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/MicroservicioUsuarioArrancado.png)
+ 
+ Microservicio libros:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/MicroservicioLibroArrancado.png)
+ 
+ Microservicio comentario:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/MicroservicioComentario.png)
+ 
+ Microservicio chat:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/MicroservicioChatArrancado.png)
+ 
+ Una vez arrancado todo el back de la aplicación nos dispondremos a arrancar el front. Para ello nos situamos en la carpeta dónde se encuentra el mismo, abrimos una terminal en dicho directorio y ejecutamos el comando "npm start". En caso de que no encuentre proyecto para arrancar, puede ser porque no están instalados los paquetes, para ello ejecutamos el comando "npm install".
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/NpmStart.png)
+ 
+ Npm start ejecutado:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/NpmStartEjecutado.png)
+ 
+ Y ya una vez ejecutado el comando "npm start", se nos abrirá una pestaña en el navegador que tengas por defecto en tu máquina de la aplicación.
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/AppArrancada.png)
+ 
  
  
  
