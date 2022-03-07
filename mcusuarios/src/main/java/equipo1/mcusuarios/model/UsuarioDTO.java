@@ -19,6 +19,7 @@ public class UsuarioDTO {
     String apellidos;
     String Username;
     String correo;
-    List<Object> listaComentarios;
-    List<Object> listaLibrosLeidos;
+    String clave;
+    List<String> listaComentarios;
+    List<String> listaLibrosLeidos;
 }

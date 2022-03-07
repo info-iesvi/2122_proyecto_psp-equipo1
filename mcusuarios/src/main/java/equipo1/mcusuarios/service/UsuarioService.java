@@ -14,4 +14,5 @@ public interface UsuarioService {
     ResponseEntity<UsuarioDTO> get(String dni);
     ResponseEntity<UsuarioDTO> modify(String dni,UsuarioDTO usuariodto);
     ResponseEntity<String> delete(String dni);
+    boolean login(String userName, String clave);
 }
