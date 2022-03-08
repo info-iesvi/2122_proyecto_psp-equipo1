@@ -18,6 +18,11 @@
  - CODIFICACIÓN + FRONTEND DE MICROSERVICIO DE LIBRO EN MONGO
  - CODIFICACIÓN + FRONTEND DE MICROSERVICIO DE COMENTARIO EN MONGO
  - CODIFICACIÓN + FRONTEND DE CLIENTES ESTÁNDAR CORREOS
+ - CODIFICACIÓN + FRONTEND IMPLEMENTACIÓN DE HILOS
+ - CODIFICACIÓN + FRONTEND CREACIÓN DE CUENTA DE USUARIOS + CIFRADO ASIMETRICO DE CONTRASEÑA (SHA 256)
+ - CODIFICACIÓN + FRONTEND LOGIN/LOGOUT DE USUARIOS EXISTENTES + CIFRADO SIMÉTRICO REGISTRADO EN REGISTRO LOG
+ - CODIFICACIÓN + FRONTEND CREACIÓN DE NUEVOS COMENTARIOS + COMUNICACIÓN ENTRE MICROSERVICIOS
+ - MINI TUTORIAL ¿CÓMO ARRANCAR PROYECTO?
 
 ## INTRODUCCIÓN:
 El Equipo 1 busca ofrecer una plataforma cómoda y segura para promover y facilitar el buen hábito lector de modo que se adapte a nuevos usuarios con ganas de conocer nuevos mundos, historias, relatos, asi como personas con quien compartirlos. Buscamos ofrecer un buen catálogo de entradas comentadas por nuestros usuarios y un acceso a chats en vivo.
@@ -669,13 +674,239 @@ Solo encontraríamos uno.
  
  ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/InterfazRequest3.png)
  
- Y si se envía una sugerencia correctamente, la página lo indica así:
+ Y si se envía una sugerencia correctamente, la página lo indica así
  
  ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/InterfazRequest4.png)
+ 
+ A los cinco segundos de enviarse la petición, la aplicación te redirigirá a la página de inicio y esto gracias al método setTimeout, que te redirigirá a la página indicada en el método "window.location.href" en el tiempo indicado, que en nuestro caso hemos puesto 5000 milisegundos.
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/fronthilos.png)
  
  Ejemplo de mensaje que envía la aplicación al correo indicado en la sugerencia:
  
  ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/InterfazRequest5.png)
+ 
+ ## CODIFICACIÓN + FRONTEND IMPLEMENTACIÓN DE HILOS
+ Para el uso de hilos, lo hemos implementado en la funcionalidad de correos. Para cada correo/ peticiín que hagan los usuarios se creará un hilo para ocupearse de la recepción de la sugerencia y envío de correo a la persona correspondiente.
+ 
+ Para ello hemos modificado el microservicio de libros, concretamente la clase servicio "LibroServiceImpl.java". Dentro, hemos creado una subclase llamada "HiloRequest" que extiende de "Thread". Para dicha subclase hemos generado un constructor el cual pide la sugerencia que se recibe desde el propio método "SendRequest", explicado en el anterior punto. 
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/CLASE%20HILO.png)
+ 
+ Pues como extiende de hilo, hemos implementado el método "run" el cuál contiene todo el bloque de código encargado de recibir la sugerencia, procesarla y enviar el correo a la persona correspondiente.
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/METODORUN.png)
+ 
+ Por lo tanto, el método "SendRequest" de la clase "LibroServiceImpl.java", se quedaría así:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/METODOSENDREQUEST.png)
+ 
+ ## CODIFICACIÓN + FRONTEND CREACIÓN DE CUENTA DE USUARIOS + CIFRADO ASIMETRICO DE CONTRASEÑA (SHA 256)
+ 
+ En el menú superior de la aplicación se ha establecido un botón de inicio de sesión que nos lleva al componente de login.
+
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/creaCuenta1.png)
+ 
+ Dicho componente tiene la siguiente estructura:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/creaCuenta2.png)
+ 
+ Como podemos ver hemos agregado dos opciones principales: Insertar un usuario y contraseña para iniciar la sesión y un botón de registro. En nuestro caso pulsaremos en dicho botón, el cúal nos llevará al componente de creación de nuevos usuarios.
+
+ Procedemos a insertar los datos del nuevo usuario. En este caso los datos de mayor interés van a ser Username (Pepe23) y la contraseña o clave (1234):
+
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/creaCuenta3.png)
+ 
+ Una vez pulsemos el botón de Crear se iniciará una llamada http al microservicio de usuario para realizar la inserción:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/creaCuenta4.png)
+ 
+Como podemos ver la petición se realiza mediante método POST y recibe los datos del usuario mediante la etiqueta @RequestBody. Al acceder al método se llama al servicio para proceder con la inserción pero asegurándonos de convertir previamente el objeto en uno que sea válido para la comunicación con la base de datos, es decir un VO:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/creaCuenta5.png)
+ 
+Esta conversión es clave para nuestro programa, no solo para la inserción sino por la modificación que hemos realizado sobre dicha conversión: Cuando un usuario va a ser almacenado como nuevo se cifrará su clave mediante cifrado SHA 256:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/creaCuenta6.png)
+ 
+Lo primero que hemos hecho es declarar un MessageDigest que no permita generar resúmenes de un tipo de cifrado concreto. En este caso como podemos ver va a ser un cifrado SHA256. Posteriormente tomamos la clave del usuario, la convertimos en un array de bytes y con nuestro MessageDigest la convertimos en un resumen o HASH. Para que el almacenamiento sea más óptimo lo que haremos será convertir ese HASH en Hexadecimal, que será mucho mejor para la realización de las comprobaciones desde el FRONTEND. Para ello disponemos de la siguiente función:
+
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/creaCuenta7.png)
+ 
+Con esto el conversor se encargará de que al crear el VO se cifre la clave para su almacenamiento en base de datos. Internamente desde el FRONTEND esta llamada al microservicio se ha ejecutado con un gestor de servicios que hemos denominado en REACT “PersonSataService”. Una vez se realice la creación del nuevo usuario se realiza una redirección al componente de Login mediante window.location.href:
+
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/creaCuenta8.png)
+ 
+ Lo que de nuevo no lleva al componente en cuestión. 
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/creaCuenta9.png)
+ 
+ ## CODIFICACIÓN + FRONTEND LOGIN/LOGOUT DE USUARIOS EXISTENTES + CIFRADO SIMÉTRICO REGISTRADO EN REGISTRO LOG
+ 
+Como vimos anteriormente el componente de login nos pide un nombre de usuario y una contraseña. Desde el Frontend se recogen estos datos para almacenarlos, se cifra la clave con SHA 256 y si existe en la base de datos un usuario con ese nombre de usuario y un HASH de clave que tenga el mismo valor que el HASH recién generado internamente desde el Frontend quiere decir que es un usuario válido. en caso contrario se mostrará el siguiente mensaje.
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/loginLogout1.png)
+ 
+Para la encriptación SHA 256 en REACT se ha utilizado una librería denominada “crypto-js”, de la cual usaremos sólo la vertiente SHA256.
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/loginLogout2.png)
+ 
+Al pulsarse en el botón de Acceder se realiza un llamamiento a una función del Frontend denominada iniciarSesion(), la cual recoge los datos de los inputs mediante document.getElementById:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/loginLogout3.png)
+ 
+Al recoger la ID la encriptamos con la función sha256 y procedemos a buscar si existe algún usuario con el Username recogido y comprobamos si el valor HASH de la clave almacenada coincide con la que acabamos de encriptar. En caso afirmativo procederemos a aceptar el LOGIN y ejecutaremos una nueva llamada http que se encargue de registrar ese login en un documento de registro:
+
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/loginLogout4.png)
+ 
+que veremos más adelante.
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/loginLogout5.png)
+ 
+Si el usuario se ha logueado correctamente le lanzamos un mensaje de aviso.
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/loginLogout6.png)
+ 
+El login es visible en la aplicación, reflejando el nombre del usuario y alternando el botón de Iniciar sesión por el de cerrarla. El botón de cerrar sesión también hará un llamamiento http al microservicio de usuario para dejar constancia en el registro del cierre de sesión.
+
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/loginLogout7.png)
+ 
+Por lo tanto, cada vez que el usuario inicie o cierre sesión se realiza una petición http al microservicio de usuario para dejar constancia. Para ello se envía el nombre del usuario y la fecha del día actual. El documento de registro es el siguiente:
+
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/loginLogout8.png)
+ 
+En él los registro se van almacenando línea a línea:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/loginLogout9.png)
+ 
+Para el cifrado con clave secreta se ha creado una clase AES (Como el método de cifrado, vaya), la cual se encarga de controlar la clave secreta para poder generarla satisfactoriamente y establecer un método de encriptación y desencriptación.
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/loginLogout10.png)
+ 
+Para la encriptación se recibe el String a encriptar y la clave secreta. tras ello se crea un Cipher inicializado con la clave secreta y se procede a encriptar en Base 64
+
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/loginLogout11.png)
+ 
+Para desencriptar el proceso es muy similar, solo que se utiliza el método decode.
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/loginLogout12.png)
+ 
+A efectos prácticos se ha creado un método POST en el microservicio de usuarios denominado logUser. Este recibe el string a almacenar, declara la clave secreta y procede a encriptar el string con dicha clave, ejecutando los métodos comentados previamente. Tras ello se comprueba si existe el fichero de registro “miLog.txt”. En caso negativo procedemos a crearlo y escribiremos simplemente el nuevo mensaje encriptado.
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/loginLogout13.png)
+ 
+En caso contrario procedemos a leer el contenido del registro para recoger los datos, los almacenamos en una colección para poder recorrerlas fácilmente con un Iterador de modo que podamos recorrerlo linea a linea para ir generando el nuevo contenido del documento respetando el contenido previo. Tras la relectura y escritura se procede a escribir el nuevo string encriptado.
+
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/loginLogout14.png)
+ 
+Como podemos ver al final del método siempre se muestra por pantalla el mensaje desencriptado mediante el uso de la misma clave simétrica.
+ 
+Como hemos comentado si el usuario hace logout se produce el mismo resultado, solo alternándose el contenido del mensaje:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/loginLogout15.png)
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/loginLogout16.png)
+ 
+ 
+ ## CODIFICACIÓN + FRONTEND CREACIÓN DE NUEVOS COMENTARIOS + COMUNICACIÓN ENTRE MICROSERVICIOS
+ 
+Para la creación de un nuevo comentario lo primero que tenemos que hacer es ir a la página principal de la aplicación y pulsar en el botón de “Ver más” de modo que podamos acceder a la pantalla individual de entrada del libro en cuestión:
+
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/crearComentario1.png)
+ 
+En la sección de comentarios, justo en la zona inferior de la descripción del libro veremos un bloque que nos indica que insertemos un usuario y un comentario a enviar:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/crearComentario2.png)
+ 
+Si intentamos crear un nuevo comentario con un Username no existente en la base de datos se nos informará en consecuencia:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/crearComentario3.png)
+ 
+Pero si insertamos un usuario que realmente exista, como por ejemplo el que creamos en el apartado anterior:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/crearComentario4.png)
+ 
+Veremos que al actualizar la página se ha insertado el nuevo comentario, el cual se compone del autor reactor, de la fecha de creación y del propio comentario en sí mismo.
+
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/crearComentario5.png)
+ 
+Para conseguir esto hemos realizado una comprobación de la existencia del usuario. En caso afirmativo se genera un ID para el comentario, se construye la fecha actual y con ello se declara una variable data que contenga los datos requeridos por el body del microservicio de comentarios. Una vez enviado se almacena el comentario en dicho microservicio.
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/crearComentario6.png)
+ 
+Pero además esa misma petición se comunica con el microservicios de usuarios, de modo que se actualice la información de dicho usuario mediante una petición PUT por http a la que se le pasa una variable dataUser con todos los datos requisitos pro el microservicio de usuarios pero agregando como novedad el ID del comentario creado.
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/crearComentario7.png)
+ 
+Para comprobar la inserción simplemente nos iremos a Postman y comprobamos que si buscamos todos los usuarios:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/crearComentario8.png)
+ 
+Encontramos el ID del comentario recién creado en el listado de comentarios del usuario autor.
+
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/crearComentario9.png)
+ 
+Del mismo modo si buscamos todos los comentarios:
+
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/crearComentario10.png)
+ 
+veremos que se ha registrado perfectamente en su microservicio correspondiente, con su autor y sus datos:
+
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/crearComentario11.png)
+ 
+
+ 
+ ## MINI TUTORIAL ¿CÓMO ARRANCAR PROYECTO?
+ Para arrancar el proyecto, primero necesitaremos arrancar un contenedor de docker con una imagen base de "bitnami/mongodb". En caso de no tener ningún contenedor con esta imagen antes puedes arrancar uno desde cero con el comando "docker run -d bitnami/mongodb" .
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/ArrancarContenedorMongo.png)
+ 
+ Una vez arrancado el contenedor mongodb, arrancaremos loas cuatro microservicios que componen el "Back" de la aplicación. Para arrancar los microservicios, podemos abrirlos  en IntelliJ y pulsar sobre el botón play de color verde situado arriba a la derecha.
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/MicroservicioSinArrancar.png)
+ 
+ Microservicio usuarios:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/MicroservicioUsuarioArrancado.png)
+ 
+ Microservicio libros:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/MicroservicioLibroArrancado.png)
+ 
+ Microservicio comentario:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/MicroservicioComentario.png)
+ 
+ Microservicio chat:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/MicroservicioChatArrancado.png)
+ 
+ Una vez arrancado todo el back de la aplicación nos dispondremos a arrancar el front. Para ello nos situamos en la carpeta dónde se encuentra el mismo, abrimos una terminal en dicho directorio y ejecutamos el comando "npm start". En caso de que no encuentre proyecto para arrancar, puede ser porque no están instalados los paquetes, para ello ejecutamos el comando "npm install".
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/NpmStart.png)
+ 
+ Npm start ejecutado:
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/NpmStartEjecutado.png)
+ 
+ Y ya una vez ejecutado el comando "npm start", se nos abrirá una pestaña en el navegador que tengas por defecto en tu máquina de la aplicación.
+ 
+ ![Texto alternativo](https://github.com/info-iesvi/2122_proyecto_psp-equipo1/blob/doc/AppArrancada.png)
+ 
+ En caso de que no tengas usuarios, ni libros cargados en tu contenedor mongo, aquí tienes unos de ejemplo:
+ 
+ Libros: https://docs.google.com/document/d/1qeiVi6fnuDaqdNc1LGnU81CaVoDTiAkjfcEcu8erS8U/edit?usp=sharing
+ 
+ Usuarios: https://docs.google.com/document/d/1_YWWezQkri_7C5CLVk83uIFle_TJ5ETZ8CVsZslo5iU/edit?usp=sharing
+ 
+ 
+ 
+ 
+
  
  
  
