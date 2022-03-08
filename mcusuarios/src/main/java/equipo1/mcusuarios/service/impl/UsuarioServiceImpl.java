@@ -120,4 +120,15 @@ public class UsuarioServiceImpl implements UsuarioService {
         }
 
     }
+
+    @Override
+    public boolean login(String userName, String clave) {
+        List<UsuarioVO> lista = usuarioRepository.findAll();
+        for(UsuarioVO uvo : lista){
+            if(uvo.getUsername().equals(userName) && uvo.getClave().equals(clave)){
+                return true;
+            }
+        }
+        return false;
+    }
 }

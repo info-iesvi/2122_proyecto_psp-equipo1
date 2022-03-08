@@ -47,8 +47,7 @@ public class LibroController implements LibroAPI {
 
     @Override
     @PostMapping("/request")
-    public ResponseEntity senRequest(@RequestBody Request request) {
-        libroService.SendRequest(request);
-        return ResponseEntity.ok().build();
+    public boolean senRequest(@RequestBody Request request) {
+        return libroService.SendRequest(request);
     }
 }

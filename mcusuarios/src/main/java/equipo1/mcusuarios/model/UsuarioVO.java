@@ -18,7 +18,8 @@ public class UsuarioVO {
     String nombre;
     String apellidos;
     String Username;
+    String clave;
     String correo;
-    List<Object> listaComentarios;
-    List<Object> listaLibrosLeidos;
+    List<String> listaComentarios;
+    List<String> listaLibrosLeidos;
 }

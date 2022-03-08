@@ -130,7 +130,21 @@ public class LibroServiceImpl implements LibroService {
     }
 
     @Override
-    public void SendRequest(Request request) {
+    public boolean SendRequest(Request request) {
+       HiloRequest hilo = new HiloRequest(request);
+       hilo.start();
+       return true;
+    }
+}
+
+class HiloRequest extends Thread{
+    Request request;
+    public HiloRequest(Request request){
+        super();
+        this.request = request;
+    }
+
+    public void run(){
         AuthenticatingSMTPClient clienteAutentificado = new AuthenticatingSMTPClient();
         //Establecemos los datos de usuario
         String servidor = "smtp.gmail.com";
@@ -153,36 +167,36 @@ public class LibroServiceImpl implements LibroService {
 
             // MODO NO IMPLICITO - NECESITA NEGOCIAR TLS
             //Esto se hace ejecutando el comando execTLS y comprobando si es true
-            if(clienteAutentificado.execTLS()){
-                System.out.println("3 - "+clienteAutentificado.getReplyString());
+            if(clienteAutentificado.execTLS()) {
+                System.out.println("3 - " + clienteAutentificado.getReplyString());
                 //Nos autentificamos ante el servdiro
-                if(clienteAutentificado.auth(AuthenticatingSMTPClient.AUTH_METHOD.PLAIN, usuario,clave)){
-                    System.out.println("4 - "+clienteAutentificado.getReplyString());
+                if (clienteAutentificado.auth(AuthenticatingSMTPClient.AUTH_METHOD.PLAIN, usuario, clave)) {
+                    System.out.println("4 - " + clienteAutentificado.getReplyString());
                     String destinatario1 = request.getEmail();
                     String asunto = "Sugerencia Readmine";
 
                     //Creamos nuestra cabecera
-                    SimpleSMTPHeader cabeceraSimple = new SimpleSMTPHeader(remitente,destinatario1,asunto);
+                    SimpleSMTPHeader cabeceraSimple = new SimpleSMTPHeader(remitente, destinatario1, asunto);
                     clienteAutentificado.setSender(usuario);
                     clienteAutentificado.addRecipient(destinatario1);
-                    System.out.println("5 - "+clienteAutentificado.getReplyString());
+                    System.out.println("5 - " + clienteAutentificado.getReplyString());
                     //Creamos neustro Writer para datas y lo enviamos:
                     Writer writer = clienteAutentificado.sendMessageData();
-                    if(writer==null){
+                    if (writer == null) {
                         System.out.println("Fallo al enviar DATA");
                         System.exit(1);
                     }
                     writer.write(cabeceraSimple.toString());
-                    String mensaje = "Buenas, hemos recibido tu siguiente sugerencia: "+request.getMessage()+"\nMuchas gracias por apoyar nuestro blog, estamos trabajando para que ese libro llegue al blog.";
+                    String mensaje = "Buenas, hemos recibido tu siguiente sugerencia: " + request.getMessage() + "\nMuchas gracias por apoyar nuestro blog, estamos trabajando para que ese libro llegue al blog.";
                     writer.write(mensaje);
                     writer.close();
-                    System.out.println("6 - "+clienteAutentificado.getReplyString());
+                    System.out.println("6 - " + clienteAutentificado.getReplyString());
                     boolean exito = clienteAutentificado.completePendingCommand();
-                    System.out.println("7 - "+clienteAutentificado.getReplyString());
-                    if(!exito){
+                    System.out.println("7 - " + clienteAutentificado.getReplyString());
+                    if (!exito) {
                         System.out.println("No se ha podido completar la transacción.");
                         System.exit(1);
-                    }else{
+                    } else {
                         System.out.println("Mensaje enviado con éxito.");
                     }
                 }
@@ -202,5 +216,6 @@ public class LibroServiceImpl implements LibroService {
         } catch (InvalidKeyException e) {
             e.printStackTrace();
         }
+
     }
 }
